@@ -1,0 +1,18 @@
+﻿@page "/test"
+@using ArtCommissions.Data;
+@using Microsoft.EntityFrameworkCore;
+@using static System.Net.Mime.MediaTypeNames;
+
+@inject IDbContextFactory<PostgresContext> contextFactory
+
+<h3>Component</h3>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var context = contextFactory.CreateDbContext();
+
+        var i = await context.ExampleArts.FirstOrDefaultAsync(i => i.Id == 1);
+        byte[] image = i.Image;
+    }
+}
