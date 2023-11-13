@@ -28,12 +28,4 @@ else
             .FirstOrDefaultAsync(i => i.Id == 1);
         imageBytes = art.Image;
     }
-
-    // https://www.codeproject.com/Articles/15460/C-Image-to-Byte-Array-and-Byte-Array-to-Image-Conv
-    public Image byteArrayToImage(byte[] byteArrayIn)
-    {
-        MemoryStream ms = new MemoryStream(byteArrayIn);
-        Image returnImage = Image.FromStream(ms);
-        return returnImage;
-    }
 }
