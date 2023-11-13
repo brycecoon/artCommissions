@@ -1,18 +1,39 @@
 ﻿@page "/test"
 @using ArtCommissions.Data;
 @using Microsoft.EntityFrameworkCore;
-@using static System.Net.Mime.MediaTypeNames;
+@using System.Drawing;
 
 @inject IDbContextFactory<PostgresContext> contextFactory
 
 <h3>Component</h3>
 
+@if (imageBytes != null)
+{
+    <img src="data:image/jpeg;base64,@Convert.ToBase64String(imageBytes)" alt="Test Image" />
+}
+else
+{
+    <p>No image</p>
+}
+
+
 @code {
+    private byte[] imageBytes { get; set; } = null;
+
     protected override async Task OnInitializedAsync()
     {
         var context = contextFactory.CreateDbContext();
 
-        var i = await context.ExampleArts.FirstOrDefaultAsync(i => i.Id == 1);
-        byte[] image = i.Image;
+        var art = await context.ExampleArts
+            .FirstOrDefaultAsync(i => i.Id == 1);
+        imageBytes = art.Image;
+    }
+
+    // https://www.codeproject.com/Articles/15460/C-Image-to-Byte-Array-and-Byte-Array-to-Image-Conv
+    public Image byteArrayToImage(byte[] byteArrayIn)
+    {
+        MemoryStream ms = new MemoryStream(byteArrayIn);
+        Image returnImage = Image.FromStream(ms);
+        return returnImage;
     }
 }
