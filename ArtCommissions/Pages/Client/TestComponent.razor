@@ -55,14 +55,13 @@ else
             {
                 await stream.CopyToAsync(memoryStream);
 
-                var fileModel = new ExampleArt
+                ExampleArt art = new ExampleArt()
                     {
-                       
                         Image = memoryStream.ToArray()
                     };
 
                 // Save to the database using DbContext
-                await context.ExampleArts.AddAsync(fileModel);
+                await context.ExampleArts.AddAsync(art);
                 await context.SaveChangesAsync();
             }
         }
