@@ -1,4 +1,6 @@
 using ArtCommissions.Data;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +11,22 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddDbContextFactory<PostgresContext>(config => config.UseNpgsql(builder.Configuration.GetConnectionString("db")));
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+builder.Services.AddAuthentication().AddGoogle(options =>
+{
+    var clientid = builder.Configuration["Google:ClientId"];
+    options.ClientId = builder.Configuration["Google:ClientId"];
+    options.ClientSecret = builder.Configuration["Google:ClientSecret"];
+    options.ClaimActions.MapJsonKey("urn:google:profile", "link");
+    options.ClaimActions.MapJsonKey("urn:google:image", "picture");
+}
+);
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IHttpContextAccessor>();
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<HttpClient>();
 
 var app = builder.Build();
 
@@ -21,9 +39,9 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
-
+app.UseCookiePolicy();
+app.UseAuthentication();
 app.UseRouting();
 
 app.MapBlazorHub();
