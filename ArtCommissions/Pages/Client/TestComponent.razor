@@ -2,10 +2,16 @@
 @using ArtCommissions.Data;
 @using Microsoft.EntityFrameworkCore;
 @using System.Drawing;
+@using System.IO;
 
 @inject IDbContextFactory<PostgresContext> contextFactory
 
 <h3>Component</h3>
+
+<div class="my-3 d-flex">
+    <InputFile OnChange="@HandleFileChange" />
+    <button class="btn btn-primary d-inline mx-2" @onclick="SaveFileToDatabase">Upload</button>
+</div>
 
 @if (imageBytes != null)
 {
@@ -19,13 +25,46 @@ else
 
 @code {
     private byte[] imageBytes { get; set; } = null;
+    private byte[] uploadImagesBytes { get; set; } = null;
+    private IBrowserFile? file = null;
 
     protected override async Task OnInitializedAsync()
     {
         var context = contextFactory.CreateDbContext();
 
         var art = await context.ExampleArts
-            .FirstOrDefaultAsync(i => i.Id == 1);
+            .FirstOrDefaultAsync(i => i.Id == 3);
         imageBytes = art.Image;
+    }
+
+
+    private void HandleFileChange(InputFileChangeEventArgs e)
+    {
+        file = e.File;
+    }
+
+    private async Task SaveFileToDatabase()
+    {
+        if (file == null) { return; }
+
+        var context = contextFactory.CreateDbContext();
+        // var stream = file.OpenReadStream();
+        using (var stream = file.OpenReadStream(8000000))
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                await stream.CopyToAsync(memoryStream);
+
+                var fileModel = new ExampleArt
+                    {
+                       
+                        Image = memoryStream.ToArray()
+                    };
+
+                // Save to the database using DbContext
+                await context.ExampleArts.AddAsync(fileModel);
+                await context.SaveChangesAsync();
+            }
+        }
     }
 }
