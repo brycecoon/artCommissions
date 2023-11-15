@@ -1,10 +1,51 @@
 ﻿@page "/admin/profile"
+@using ArtCommissions.Data;
+@using Microsoft.EntityFrameworkCore;
+@using System.Drawing;
+@using System.IO;
+@inject IDbContextFactory<PostgresContext> contextFactory
+@inject NavigationManager navManager
+
+
 
 <h3>ArtistProfile</h3>
 
+<p> currently viewing the profile of artist @fname @lname</p>
+<hr />
+<p> about me: @aboutme</p>
+<hr />
+<p> socials: @socials</p>
+
 @code {
-    //TODO: still need to make artist profile table in our database (id, artistName, Socials string, aboutMe)
+    //TODO: still need to make artist profile table in our database (profile picture)
+    [Parameter]
+    public int id { get; set; } = 1;
+    public string? fname { get; set; }
+    public string? lname { get; set; }
+    public string? aboutme { get; set; }
+    public string? socials { get; set; }
 
-    
 
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = contextFactory.CreateDbContext();
+
+        var artist = await context.Artists
+            .FirstOrDefaultAsync(i => i.Id == id);
+
+        fname = artist.Firstname;
+        lname = artist.Lastname;
+        aboutme = artist.Aboutme;
+        socials = artist.Socials;
+        
+
+    }
+
+    async Task refreshAsync()
+    {
+
+        
+    }
 }
+    

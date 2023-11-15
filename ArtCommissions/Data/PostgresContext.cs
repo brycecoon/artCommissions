@@ -15,13 +15,13 @@ public partial class PostgresContext : DbContext
     {
     }
 
+    public virtual DbSet<Artist> Artists { get; set; }
+
     public virtual DbSet<Client> Clients { get; set; }
 
     public virtual DbSet<Commission> Commissions { get; set; }
 
     public virtual DbSet<CommissionMedium> CommissionMedia { get; set; }
-
-    public virtual DbSet<CommissionType> CommissionTypes { get; set; }
 
     public virtual DbSet<Ctype> Ctypes { get; set; }
 
@@ -42,6 +42,27 @@ public partial class PostgresContext : DbContext
             .HasPostgresExtension("pg_catalog", "azure")
             .HasPostgresExtension("pg_catalog", "pgaadauth")
             .HasPostgresExtension("pg_cron");
+
+        modelBuilder.Entity<Artist>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("artist_pkey");
+
+            entity.ToTable("artist", "commissions");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Aboutme)
+                .HasMaxLength(500)
+                .HasColumnName("aboutme");
+            entity.Property(e => e.Firstname)
+                .HasMaxLength(30)
+                .HasColumnName("firstname");
+            entity.Property(e => e.Lastname)
+                .HasMaxLength(30)
+                .HasColumnName("lastname");
+            entity.Property(e => e.Socials)
+                .HasMaxLength(1048)
+                .HasColumnName("socials");
+        });
 
         modelBuilder.Entity<Client>(entity =>
         {
@@ -73,7 +94,6 @@ public partial class PostgresContext : DbContext
             entity.Property(e => e.Description)
                 .HasMaxLength(1048)
                 .HasColumnName("description");
-            entity.Property(e => e.MediumId).HasColumnName("medium_id");
 
             entity.HasOne(d => d.Client).WithMany(p => p.Commissions)
                 .HasForeignKey(d => d.ClientId)
@@ -82,10 +102,6 @@ public partial class PostgresContext : DbContext
             entity.HasOne(d => d.Ctype).WithMany(p => p.Commissions)
                 .HasForeignKey(d => d.CtypeId)
                 .HasConstraintName("commission_ctype_id_fkey");
-
-            entity.HasOne(d => d.Medium).WithMany(p => p.Commissions)
-                .HasForeignKey(d => d.MediumId)
-                .HasConstraintName("commission_medium_id_fkey");
         });
 
         modelBuilder.Entity<CommissionMedium>(entity =>
@@ -105,25 +121,6 @@ public partial class PostgresContext : DbContext
             entity.HasOne(d => d.Medium).WithMany(p => p.CommissionMedia)
                 .HasForeignKey(d => d.MediumId)
                 .HasConstraintName("commission_medium_medium_id_fkey");
-        });
-
-        modelBuilder.Entity<CommissionType>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("commission_type_pkey");
-
-            entity.ToTable("commission_type", "commissions");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.CommissionId).HasColumnName("commission_id");
-            entity.Property(e => e.CtypeId).HasColumnName("ctype_id");
-
-            entity.HasOne(d => d.Commission).WithMany(p => p.CommissionTypes)
-                .HasForeignKey(d => d.CommissionId)
-                .HasConstraintName("commission_type_commission_id_fkey");
-
-            entity.HasOne(d => d.Ctype).WithMany(p => p.CommissionTypes)
-                .HasForeignKey(d => d.CtypeId)
-                .HasConstraintName("commission_type_ctype_id_fkey");
         });
 
         modelBuilder.Entity<Ctype>(entity =>
@@ -201,15 +198,13 @@ public partial class PostgresContext : DbContext
             entity.ToTable("medium", "commissions");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.CtypeName)
-                .HasMaxLength(64)
-                .HasColumnName("ctype_name");
             entity.Property(e => e.Description)
                 .HasMaxLength(1048)
                 .HasColumnName("description");
+            entity.Property(e => e.MediumName)
+                .HasMaxLength(64)
+                .HasColumnName("medium_name");
         });
-        modelBuilder.HasSequence("jobid_seq", "cron");
-        modelBuilder.HasSequence("runid_seq", "cron");
 
         OnModelCreatingPartial(modelBuilder);
     }

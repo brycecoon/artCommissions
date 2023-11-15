@@ -1,8 +1,33 @@
 ﻿@page "/admin/clients"
+@using ArtCommissions.Data;
+@using Microsoft.EntityFrameworkCore;
+@inject IDbContextFactory<PostgresContext> contextFactory
 
 <h3>ClientList</h3>
 <p>this works</p>
-
+<tbody>
+    @foreach (var row in Commissions)
+    {
+        <tr>
+            <td>This is the Client: @row.Client.ClientName</td>
+            <td>This is the discription: @row.Description</td>
+            <td>This is the Ctype: @row.Ctype.CtypeName</td>
+        </tr>
+    }
+</tbody>
 @code {
-    //TODO: Get all clients from the Client list 
+    private IEnumerable<Commission>? Commissions;
+
+    [Parameter]
+    public int artistid { get; set; }
+    public int clients { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        var context = contextFactory.CreateDbContext();
+
+        Commissions = context.Commissions.Include(t => t.Client)
+                                            .Include(t => t.Ctype)
+                                            .ToArray();
+
+    }
 }
