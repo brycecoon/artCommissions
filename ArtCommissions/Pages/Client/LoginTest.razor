@@ -1,0 +1,39 @@
+﻿@page "/login"
+
+@inject IConfiguration Configuration
+
+<h3>LoginTest</h3>
+
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+<meta name="google-signin-client_id" content="@(Configuration.GetValue<string>("Google:ClientId"))">
+<div class="g-signin2" data-onsuccess="onSignIn"></div>
+<a href="#" onclick="signOut();">Sign out</a>
+<p>@(Configuration.GetValue<string>("Google:ClientId"))</p>
+
+
+
+
+
+<script>
+    function signOut() {
+        var auth2 = gapi.auth2.getAuthInstance();
+        auth2.signOut().then(function () {
+            console.log('User signed out.');
+        });
+    }
+    function onSignIn(googleUser) {
+        console.log("Mweep");
+        // Handle the signed-in user, e.g., send an AJAX request to your server
+        var profile = googleUser.getBasicProfile();
+        console.log('ID: ' + profile.getId());
+        console.log('Name: ' + profile.getName());
+        console.log('Email: ' + profile.getEmail());
+        // Add additional handling as needed
+    }
+</script>
+
+@code {
+    
+
+    
+}

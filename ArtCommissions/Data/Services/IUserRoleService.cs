@@ -1,4 +1,4 @@
-﻿namespace ArtCommissions.Data;
+﻿namespace ArtCommissions.Data.Services;
 
 public interface IUserRoleService
 {
