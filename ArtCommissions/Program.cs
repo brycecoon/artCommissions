@@ -1,17 +1,15 @@
 using ArtCommissions.Data;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
+using Syncfusion.Blazor;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddSyncfusionBlazor();
 builder.Services.AddDbContextFactory<PostgresContext>(config => config.UseNpgsql(builder.Configuration.GetConnectionString("db")));
-builder.Services.AddBlazorBootstrap();
+
 //builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 //builder.Services.AddAuthentication().AddGoogle(options =>
 //{

@@ -1,0 +1,97 @@
+﻿@page "/"
+@using ArtCommissions.Data;
+@using System.Drawing;
+@using System.IO;
+@using Syncfusion.Blazor.Navigations
+@inject IDbContextFactory<PostgresContext> contextFactory
+
+<h3>ArtistProfile</h3>
+<p> currently viewing the profile of artist @fname @lname</p>
+<hr />
+<p> about me: @aboutme</p>
+
+
+@if (socials is not null)
+{
+    @foreach (Social row in socials)
+    {
+        <p>@row.Site : <a href="@row.Link">@row.Link</a></p>
+    }
+}
+else
+{
+    <p>no socials found</p>
+}
+
+<hr />
+@if (imageBytes != null)
+{
+    <div class="control-container w-25">
+        <SfCarousel>
+            <CarouselItem>
+                <figure class="img-container">
+                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(pictures)" alt="Los Angeles" class="d-block w-100">
+                    <figcaption class="img-caption">Los Angeles</figcaption>
+                </figure>
+            </CarouselItem>
+            <CarouselItem>
+                <figure class="img-container">
+                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(imageBytes)" alt="Chicago" class="d-block w-100">
+                    <figcaption class="img-caption">Chicago</figcaption>
+                </figure>
+            </CarouselItem>
+            <CarouselItem>
+                <figure class="img-container">
+                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(imageBytes)" alt="New York" class="d-block w-100">
+                    <figcaption class="img-caption">New York</figcaption>
+                </figure>
+            </CarouselItem>
+        </SfCarousel>
+    </div>
+}
+else
+{
+    <p>No image</p>
+}
+
+@code {
+    //TODO: still need to make artist profile table in our database (profile picture)
+    [Parameter]
+    public int id { get; set; } = 1;
+    public string? fname { get; set; }
+    public string? lname { get; set; }
+    public string? aboutme { get; set; }
+    public IEnumerable<Social>? socials { get; set; } = null;
+    private byte[]? imageBytes { get; set; }
+    public byte[]? pictures { get; set; }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = contextFactory.CreateDbContext();
+
+        var artist = await context.Artists
+            .Include(a => a.Socials)
+            .FirstOrDefaultAsync(i => i.Id == id);
+
+        var picturebyte = await context.ExampleImages.Where(i => i.Id == 3).FirstOrDefaultAsync();
+
+
+
+        fname = artist.Firstname;
+        lname = artist.Lastname;
+        aboutme = artist.Aboutme;
+        socials = artist.Socials;
+        imageBytes = artist.Profilepic;
+        pictures = picturebyte.Image;
+
+
+    }
+
+    async Task refreshAsync()
+    {
+
+
+    }
+}
