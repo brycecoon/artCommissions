@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddDbContextFactory<PostgresContext>(config => config.UseNpgsql(builder.Configuration.GetConnectionString("db")));
-
+builder.Services.AddBlazorBootstrap();
 //builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 //builder.Services.AddAuthentication().AddGoogle(options =>
 //{
@@ -29,6 +29,7 @@ builder.Services.AddDbContextFactory<PostgresContext>(config => config.UseNpgsql
 //builder.Services.AddScoped<HttpClient>();
 
 var app = builder.Build();
+ // Add this line
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

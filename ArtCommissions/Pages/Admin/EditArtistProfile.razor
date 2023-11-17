@@ -34,6 +34,7 @@
         var artist = await context.Artists.Include(a => a.Socials)
             .FirstOrDefaultAsync(i => i.Id == id);
 
+
         fname = artist.Firstname;
         lname = artist.Lastname;
         aboutme = artist.Aboutme;
