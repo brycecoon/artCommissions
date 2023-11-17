@@ -5,47 +5,37 @@
 @using Syncfusion.Blazor.Navigations
 @inject IDbContextFactory<PostgresContext> contextFactory
 
-<h3>ArtistProfile</h3>
-<p> currently viewing the profile of artist @fname @lname</p>
-<hr />
-<p> about me: @aboutme</p>
-
-
-@if (socials is not null)
-{
-    @foreach (Social row in socials)
+<div class="border border-success">
+    <h3>Artist Profile</h3>
+    <p> This is the page of @Name</p>
+    <p> about me: @About</p>
+</div>
+<div class="border border-danger">
+    @if (Socials is not null)
     {
-        <p>@row.Site : <a href="@row.Link">@row.Link</a></p>
+        @foreach (Social row in Socials)
+        {
+            <p>@row.Site : <a href="@row.Link">@row.Link</a></p>
+        }
     }
-}
-else
-{
-    <p>no socials found</p>
-}
+    else
+    {
+        <p>no socials found</p>
+    }
+</div>
 
-<hr />
-@if (imageBytes != null)
+@if (imageBytes.Count != 0)
 {
-    <div class="control-container w-25">
+    <div class="control-container w-75">
         <SfCarousel>
-            <CarouselItem>
-                <figure class="img-container">
-                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(pictures)" alt="Los Angeles" class="d-block w-100">
-                    <figcaption class="img-caption">Los Angeles</figcaption>
-                </figure>
-            </CarouselItem>
-            <CarouselItem>
-                <figure class="img-container">
-                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(imageBytes)" alt="Chicago" class="d-block w-100">
-                    <figcaption class="img-caption">Chicago</figcaption>
-                </figure>
-            </CarouselItem>
-            <CarouselItem>
-                <figure class="img-container">
-                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(imageBytes)" alt="New York" class="d-block w-100">
-                    <figcaption class="img-caption">New York</figcaption>
-                </figure>
-            </CarouselItem>
+            @foreach (byte[] image in imageBytes)
+            {
+                <CarouselItem>
+                    <figure class="img-container">
+                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(image)" alt="Los Angeles" class="d-block w-100">
+                    </figure>
+                </CarouselItem>
+            }
         </SfCarousel>
     </div>
 }
@@ -57,15 +47,12 @@ else
 @code {
     //TODO: still need to make artist profile table in our database (profile picture)
     [Parameter]
-    public int id { get; set; } = 1;
-    public string? fname { get; set; }
-    public string? lname { get; set; }
-    public string? aboutme { get; set; }
-    public IEnumerable<Social>? socials { get; set; } = null;
-    private byte[]? imageBytes { get; set; }
-    public byte[]? pictures { get; set; }
-
-
+    public int ArtistID { get; set; } = 1;
+    public string? Name { get; set; }
+    public string? About { get; set; }
+    public IEnumerable<Social>? Socials { get; set; } = null;
+    private List<byte[]> imageBytes { get; set; } = new();
+    private byte[]? pfp { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -73,25 +60,21 @@ else
 
         var artist = await context.Artists
             .Include(a => a.Socials)
-            .FirstOrDefaultAsync(i => i.Id == id);
+            .FirstOrDefaultAsync(i => i.Id == ArtistID);
 
-        var picturebyte = await context.ExampleImages.Where(i => i.Id == 3).FirstOrDefaultAsync();
+        var exampleImages = await context.ExampleImages
+            .Where(i => i.CommissionExampleId == 0)
+            .Where(i => i.IsInCarousel == true)
+            .ToListAsync();
 
+        foreach (ExampleImage e in exampleImages)
+        {
+            imageBytes.Add(e.Image);
+        }
 
-
-        fname = artist.Firstname;
-        lname = artist.Lastname;
-        aboutme = artist.Aboutme;
-        socials = artist.Socials;
-        imageBytes = artist.Profilepic;
-        pictures = picturebyte.Image;
-
-
-    }
-
-    async Task refreshAsync()
-    {
-
-
+        Name = $"{artist.Firstname} {artist.Lastname}";
+        About = artist.Aboutme;
+        Socials = artist.Socials;
+        pfp = artist.Profilepic;
     }
 }
