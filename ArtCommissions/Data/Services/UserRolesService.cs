@@ -17,7 +17,7 @@ public class UserRolesService : IUserRoleService
     {
         if (email is not null)
         {
-            var customer = _context.Clients.FirstOrDefaultAsync(c => c.Email == email);
+            var customer = _context.CommissionRequests.FirstOrDefaultAsync(c => c.Email == email);
 
             if (customer == null) { 
                 // Make New Customer

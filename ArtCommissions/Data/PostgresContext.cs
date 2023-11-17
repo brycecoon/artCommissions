@@ -17,24 +17,18 @@ public partial class PostgresContext : DbContext
 
     public virtual DbSet<Artist> Artists { get; set; }
 
-    public virtual DbSet<Client> Clients { get; set; }
+    public virtual DbSet<CommissionExample> CommissionExamples { get; set; }
 
-    public virtual DbSet<Commission> Commissions { get; set; }
+    public virtual DbSet<CommissionRequest> CommissionRequests { get; set; }
 
-    public virtual DbSet<CommissionMedium> CommissionMedia { get; set; }
+    public virtual DbSet<ExampleImage> ExampleImages { get; set; }
 
-    public virtual DbSet<Ctype> Ctypes { get; set; }
+    public virtual DbSet<ReferenceImage> ReferenceImages { get; set; }
 
-    public virtual DbSet<ExampleArt> ExampleArts { get; set; }
-
-    public virtual DbSet<ExampleArtMedium> ExampleArtMedia { get; set; }
-
-    public virtual DbSet<ExampleArtType> ExampleArtTypes { get; set; }
-
-    public virtual DbSet<Medium> Media { get; set; }
+    public virtual DbSet<Social> Socials { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Name=db");
+        => optionsBuilder.UseNpgsql("Name=ConnectionStrings:db");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -59,151 +53,122 @@ public partial class PostgresContext : DbContext
             entity.Property(e => e.Lastname)
                 .HasMaxLength(30)
                 .HasColumnName("lastname");
-            entity.Property(e => e.Socials)
-                .HasMaxLength(1048)
-                .HasColumnName("socials");
+            entity.Property(e => e.Profilepic).HasColumnName("profilepic");
         });
 
-        modelBuilder.Entity<Client>(entity =>
+        modelBuilder.Entity<CommissionExample>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("client_pkey");
+            entity.HasKey(e => e.Id).HasName("commission_example_pkey");
 
-            entity.ToTable("client", "commissions");
+            entity.ToTable("commission_example", "commissions");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.ClientName)
-                .HasMaxLength(64)
-                .HasColumnName("client_name");
+            entity.Property(e => e.ArtistId).HasColumnName("artist_id");
+            entity.Property(e => e.CommissionType)
+                .HasMaxLength(50)
+                .HasColumnName("commission_type");
+            entity.Property(e => e.Description)
+                .HasMaxLength(500)
+                .HasColumnName("description");
+            entity.Property(e => e.Price)
+                .HasColumnType("money")
+                .HasColumnName("price");
+
+            entity.HasOne(d => d.Artist).WithMany(p => p.CommissionExamples)
+                .HasForeignKey(d => d.ArtistId)
+                .HasConstraintName("commission_example_artist_id_fkey");
+        });
+
+        modelBuilder.Entity<CommissionRequest>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("commission_request_pkey");
+
+            entity.ToTable("commission_request", "commissions");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.AcceptedStatus)
+                .HasMaxLength(50)
+                .HasColumnName("accepted_status");
+            entity.Property(e => e.AmmountAlreadyPaid)
+                .HasColumnType("money")
+                .HasColumnName("ammount_already_paid");
+            entity.Property(e => e.ArtistId).HasColumnName("artist_id");
+            entity.Property(e => e.CommissionCost)
+                .HasColumnType("money")
+                .HasColumnName("commission_cost");
+            entity.Property(e => e.CommissionType)
+                .HasMaxLength(100)
+                .HasColumnName("commission_type");
+            entity.Property(e => e.CompletionStatus)
+                .HasMaxLength(100)
+                .HasColumnName("completion_status");
+            entity.Property(e => e.Details)
+                .HasMaxLength(750)
+                .HasColumnName("details");
             entity.Property(e => e.Email)
-                .HasMaxLength(128)
+                .HasMaxLength(50)
                 .HasColumnName("email");
-            entity.Property(e => e.Phone)
-                .HasMaxLength(20)
-                .HasColumnName("phone");
+            entity.Property(e => e.Firstname)
+                .HasMaxLength(30)
+                .HasColumnName("firstname");
+            entity.Property(e => e.Lastname)
+                .HasMaxLength(30)
+                .HasColumnName("lastname");
+
+            entity.HasOne(d => d.Artist).WithMany(p => p.CommissionRequests)
+                .HasForeignKey(d => d.ArtistId)
+                .HasConstraintName("commission_request_artist_id_fkey");
         });
 
-        modelBuilder.Entity<Commission>(entity =>
+        modelBuilder.Entity<ExampleImage>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("commission_pkey");
+            entity.HasKey(e => e.Id).HasName("example_image_pkey");
 
-            entity.ToTable("commission", "commissions");
+            entity.ToTable("example_image", "commissions");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.ClientId).HasColumnName("client_id");
-            entity.Property(e => e.CtypeId).HasColumnName("ctype_id");
-            entity.Property(e => e.Description)
-                .HasMaxLength(1048)
-                .HasColumnName("description");
+            entity.Property(e => e.CommissionExampleId).HasColumnName("commission_example_id");
+            entity.Property(e => e.Image).HasColumnName("image");
+            entity.Property(e => e.IsInCarousel).HasColumnName("is_in_carousel");
 
-            entity.HasOne(d => d.Client).WithMany(p => p.Commissions)
-                .HasForeignKey(d => d.ClientId)
-                .HasConstraintName("commission_client_id_fkey");
-
-            entity.HasOne(d => d.Ctype).WithMany(p => p.Commissions)
-                .HasForeignKey(d => d.CtypeId)
-                .HasConstraintName("commission_ctype_id_fkey");
+            entity.HasOne(d => d.CommissionExample).WithMany(p => p.ExampleImages)
+                .HasForeignKey(d => d.CommissionExampleId)
+                .HasConstraintName("example_image_commission_example_id_fkey");
         });
 
-        modelBuilder.Entity<CommissionMedium>(entity =>
+        modelBuilder.Entity<ReferenceImage>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("commission_medium_pkey");
+            entity.HasKey(e => e.Id).HasName("reference_image_pkey");
 
-            entity.ToTable("commission_medium", "commissions");
+            entity.ToTable("reference_image", "commissions");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.CommissionId).HasColumnName("commission_id");
-            entity.Property(e => e.MediumId).HasColumnName("medium_id");
-
-            entity.HasOne(d => d.Commission).WithMany(p => p.CommissionMedia)
-                .HasForeignKey(d => d.CommissionId)
-                .HasConstraintName("commission_medium_commission_id_fkey");
-
-            entity.HasOne(d => d.Medium).WithMany(p => p.CommissionMedia)
-                .HasForeignKey(d => d.MediumId)
-                .HasConstraintName("commission_medium_medium_id_fkey");
-        });
-
-        modelBuilder.Entity<Ctype>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("ctype_pkey");
-
-            entity.ToTable("ctype", "commissions");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.CtypeName)
-                .HasMaxLength(64)
-                .HasColumnName("ctype_name");
-            entity.Property(e => e.Description)
-                .HasMaxLength(1048)
-                .HasColumnName("description");
-        });
-
-        modelBuilder.Entity<ExampleArt>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("example_art_pkey");
-
-            entity.ToTable("example_art", "commissions");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.CommissionId).HasColumnName("commission_id");
+            entity.Property(e => e.CommissionRequestId).HasColumnName("commission_request_id");
             entity.Property(e => e.Image).HasColumnName("image");
 
-            entity.HasOne(d => d.Commission).WithMany(p => p.ExampleArts)
-                .HasForeignKey(d => d.CommissionId)
-                .HasConstraintName("example_art_commission_id_fkey");
+            entity.HasOne(d => d.CommissionRequest).WithMany(p => p.ReferenceImages)
+                .HasForeignKey(d => d.CommissionRequestId)
+                .HasConstraintName("reference_image_commission_request_id_fkey");
         });
 
-        modelBuilder.Entity<ExampleArtMedium>(entity =>
+        modelBuilder.Entity<Social>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("example_art_medium_pkey");
+            entity.HasKey(e => e.Id).HasName("socials_pkey");
 
-            entity.ToTable("example_art_medium", "commissions");
+            entity.ToTable("socials", "commissions");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.ExampleArtId).HasColumnName("example_art_id");
-            entity.Property(e => e.MediumId).HasColumnName("medium_id");
+            entity.Property(e => e.ArtistId).HasColumnName("artist_id");
+            entity.Property(e => e.Link)
+                .HasMaxLength(100)
+                .HasColumnName("link");
+            entity.Property(e => e.Site)
+                .HasMaxLength(30)
+                .HasColumnName("site");
 
-            entity.HasOne(d => d.ExampleArt).WithMany(p => p.ExampleArtMedia)
-                .HasForeignKey(d => d.ExampleArtId)
-                .HasConstraintName("example_art_medium_example_art_id_fkey");
-
-            entity.HasOne(d => d.Medium).WithMany(p => p.ExampleArtMedia)
-                .HasForeignKey(d => d.MediumId)
-                .HasConstraintName("example_art_medium_medium_id_fkey");
-        });
-
-        modelBuilder.Entity<ExampleArtType>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("example_art_type_pkey");
-
-            entity.ToTable("example_art_type", "commissions");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.CtypeId).HasColumnName("ctype_id");
-            entity.Property(e => e.ExampleArtId).HasColumnName("example_art_id");
-
-            entity.HasOne(d => d.Ctype).WithMany(p => p.ExampleArtTypes)
-                .HasForeignKey(d => d.CtypeId)
-                .HasConstraintName("example_art_type_ctype_id_fkey");
-
-            entity.HasOne(d => d.ExampleArt).WithMany(p => p.ExampleArtTypes)
-                .HasForeignKey(d => d.ExampleArtId)
-                .HasConstraintName("example_art_type_example_art_id_fkey");
-        });
-
-        modelBuilder.Entity<Medium>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("medium_pkey");
-
-            entity.ToTable("medium", "commissions");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Description)
-                .HasMaxLength(1048)
-                .HasColumnName("description");
-            entity.Property(e => e.MediumName)
-                .HasMaxLength(64)
-                .HasColumnName("medium_name");
+            entity.HasOne(d => d.Artist).WithMany(p => p.Socials)
+                .HasForeignKey(d => d.ArtistId)
+                .HasConstraintName("socials_artist_id_fkey");
         });
 
         OnModelCreatingPartial(modelBuilder);

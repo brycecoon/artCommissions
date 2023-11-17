@@ -11,7 +11,13 @@ public partial class Artist
 
     public string? Lastname { get; set; }
 
-    public string? Socials { get; set; }
-
     public string? Aboutme { get; set; }
+
+    public byte[]? Profilepic { get; set; }
+
+    public virtual ICollection<CommissionExample> CommissionExamples { get; set; } = new List<CommissionExample>();
+
+    public virtual ICollection<CommissionRequest> CommissionRequests { get; set; } = new List<CommissionRequest>();
+
+    public virtual ICollection<Social> Socials { get; set; } = new List<Social>();
 }

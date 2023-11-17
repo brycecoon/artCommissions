@@ -14,7 +14,7 @@
 <hr />
 <p> about me: @aboutme</p>
 <hr />
-<p> socials: @socials</p>
+
 
 @code {
     //TODO: still need to make artist profile table in our database (profile picture)
@@ -23,7 +23,7 @@
     public string? fname { get; set; }
     public string? lname { get; set; }
     public string? aboutme { get; set; }
-    public string? socials { get; set; }
+    //public string? socials { get; set; }
 
 
 
@@ -31,13 +31,13 @@
     {
         using var context = contextFactory.CreateDbContext();
 
-        var artist = await context.Artists
+        var artist = await context.Artists.Include(a => a.Socials)
             .FirstOrDefaultAsync(i => i.Id == id);
 
         fname = artist.Firstname;
         lname = artist.Lastname;
         aboutme = artist.Aboutme;
-        socials = artist.Socials;
+        //socials = artist.Socials.;
         
 
     }

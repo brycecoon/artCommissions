@@ -32,8 +32,8 @@ else
     {
         var context = contextFactory.CreateDbContext();
 
-        var art = await context.ExampleArts
-            .FirstOrDefaultAsync(i => i.Id == 3);
+        var art = await context.ExampleImages
+            .FirstOrDefaultAsync(i => i.Id == 1);
         imageBytes = art.Image;
     }
 
@@ -55,13 +55,13 @@ else
             {
                 await stream.CopyToAsync(memoryStream);
 
-                ExampleArt art = new ExampleArt()
+                ExampleImage art = new ExampleImage()
                     {
                         Image = memoryStream.ToArray()
                     };
 
                 // Save to the database using DbContext
-                await context.ExampleArts.AddAsync(art);
+                await context.ExampleImages.AddAsync(art);
                 await context.SaveChangesAsync();
             }
         }
