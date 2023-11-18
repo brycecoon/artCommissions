@@ -1,9 +1,29 @@
 ﻿@page "/prices"
+@using ArtCommissions.Data;
+@using Microsoft.EntityFrameworkCore;
+@inject IDbContextFactory<PostgresContext> contextFactory
 
 <h3>ExamplesAndPrices</h3>
 
+@foreach(var row in Commissions)
+{//make a carousel for each row
+    <h3>Commission Type: @row.CommissionType</h3>
+    <p>Price Adder: @row.Price</p>
+    <p>Description: @row.Description</p>
+}
+
 @code {
-    //TODO: fill in the database with example sizes, price connected to it
+    private IEnumerable<CommissionExample>? Commissions;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var context = contextFactory.CreateDbContext();
+
+        Commissions = context.CommissionExamples.ToArray();
+    }
+
+    //TODO: fill in the database with example sizes, price connected to it: DONE
 
     //TODO: fill in the ExampleArtType  with data (inColor?, certain style) and how it changes the price 
 
