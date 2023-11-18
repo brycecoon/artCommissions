@@ -1,7 +1,81 @@
 ﻿@page "/admin/upload"
+@using ArtCommissions.Data;
+@using System.Drawing;
+@using System.IO;
+@using Microsoft.EntityFrameworkCore;
 
-<h3>uploadNewArt</h3>
+@inject IDbContextFactory<PostgresContext> contextFactory
+
+<h3>Component</h3>
+
+<img src="images/imageUpload.png" alt="Upload Image" />
+
+<div class="my-3 d-flex">
+    <InputFile OnChange="@HandleFileChange" />
+    <button class="btn btn-primary d-inline mx-2" @onclick="SaveFileToDatabase">Upload</button>
+</div>
+
+@if (confirmationMessage is not null)
+{
+    <p class="dissapear">@confirmationMessage</p>
+    //using the class make the message dissapear
+}
+
 
 @code {
     //get upload logic from the test component, make it look nice
+    private byte[] imageBytes { get; set; } = null;
+    private byte[] uploadImagesBytes { get; set; } = null;
+    private IBrowserFile? file = null;
+    private string confirmationMessage = null;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var context = contextFactory.CreateDbContext();
+
+        var art = await context.ExampleImages
+            .FirstOrDefaultAsync(i => i.Id == 1);
+        imageBytes = art.Image;
+    }
+
+
+    private void HandleFileChange(InputFileChangeEventArgs e)
+    {
+        file = e.File;
+    }
+
+    private async Task SaveFileToDatabase()
+    {
+        if (file == null) { return; }
+
+        try
+        {
+            var context = contextFactory.CreateDbContext();
+            // var stream = file.OpenReadStream();
+            using (var stream = file.OpenReadStream(8000000))
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await stream.CopyToAsync(memoryStream);
+
+                    ExampleImage art = new ExampleImage()
+                        {
+                            Image = memoryStream.ToArray()
+                        };
+
+                    // Save to the database using DbContext
+                    await context.ExampleImages.AddAsync(art);
+                    await context.SaveChangesAsync();
+                }
+            }
+            confirmationMessage = "Image uploaded successfully";
+            file = null;
+        }
+        catch
+        {
+            confirmationMessage = "Image failed to upload";
+        }
+    }
 }
