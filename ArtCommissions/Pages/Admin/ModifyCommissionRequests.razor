@@ -1,7 +1,58 @@
 ﻿@page "/admin/commissions"
 
+@using ArtCommissions.Data;
+@using Microsoft.EntityFrameworkCore;
+
+@inject IDbContextFactory<PostgresContext> contextFactory
+
 <h3>modifyCommissionRequests</h3>
+
+<table>
+    <tr>
+        <th>name</th>
+        <th>CommissionType</th>
+        <th>Description</th>
+        <th>email</th>
+        <th>Cost</th>
+        <th>AmmountPaid</th>
+    </tr>
+        @foreach (CommissionRequest cr in Commissions)
+        {
+    <tr>
+            <td>
+                @cr.Firstname @cr.Lastname
+            </td>
+            <td>
+                 @cr.CommissionType
+            </td>
+            <td>
+                @cr.Email
+            </td>
+            <td>
+                @cr.CommissionCost
+            </td>
+            <td>
+                @cr.AmmountAlreadyPaid
+            </td>
+            <td>
+                <button class="btn btn-primary">accept</button>
+            </td>
+            <td>
+                <button class="btn btn-danger">deny</button>
+            </td>
+    </tr>
+        }
+</table>
 
 @code {
     //TODO: display for each commission the client name, description, type, estimated time, and estimated cost
+    
+    public List<CommissionRequest> Commissions = new();
+    protected override async Task OnInitializedAsync()
+    {
+        var context = contextFactory.CreateDbContext();
+
+        Commissions = await context.CommissionRequests.Where(i => i.ArtistId == 1).ToListAsync();
+    }
+
 }
