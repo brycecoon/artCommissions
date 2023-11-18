@@ -1,7 +1,89 @@
 ﻿@page "/form1"
+@using ArtCommissions.Data;
+@using Microsoft.EntityFrameworkCore;
+@inject IDbContextFactory<PostgresContext> contextFactory
 
 <h3>Form1</h3>
+<form>
+    <label for="fname">First name:</label><br>
+    <input type="text" id="fname" name="fname"><br>
+    <label for="lname">Last name:</label><br>
+    <input type="text" id="lname" name="lname"><br>
+    <label for="lname">Email:</label><br>
+    <input type="text" id="email" name="email"><br>
+    <label for="lname">Commission Type:</label><br>
+    <input type="range" id="commission" name="commission"><br>
+    <label for="lname">Extra Details</label><br>
+    <input type="text" id="details" name="details"><br>
+
+    <img src="images/imageUpload.png" alt="Upload Image" />
+
+    <div class="my-3 d-flex">
+        <InputFile OnChange="@HandleFileChange" />
+        <button class="btn btn-primary d-inline mx-2" @onclick="SaveFileToDatabase">Upload</button>
+    </div>
+    @if (confirmationMessage is not null)
+    {
+        <p class="dissapear">@confirmationMessage</p>
+        //using the class make the message dissapear
+    }
+</form>
+
 
 @code {
-    //TODO: be able to input name, email
+    //get upload logic from the test component, make it look nice
+    private byte[] imageBytes { get; set; } = null;
+    private byte[] uploadImagesBytes { get; set; } = null;
+    private IBrowserFile? file = null;
+    private string confirmationMessage = null;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var context = contextFactory.CreateDbContext();
+
+        var art = await context.ExampleImages
+            .FirstOrDefaultAsync(i => i.Id == 1);
+        imageBytes = art.Image;
+    }
+
+
+    private void HandleFileChange(InputFileChangeEventArgs e)
+    {
+        file = e.File;
+    }
+
+    private async Task SaveFileToDatabase()
+    {
+        if (file == null) { confirmationMessage = "no file selected"; return; }
+
+        try
+        {
+            var context = contextFactory.CreateDbContext();
+            // var stream = file.OpenReadStream();
+            using (var stream = file.OpenReadStream(8000000))
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await stream.CopyToAsync(memoryStream);
+
+                    ExampleImage art = new ExampleImage()
+                        {
+                            Image = memoryStream.ToArray()
+                        };
+
+                    // Save to the database using DbContext
+                    await context.ExampleImages.AddAsync(art);
+                    await context.SaveChangesAsync();
+                }
+            }
+            confirmationMessage = "Image uploaded successfully";
+            file = null;
+        }
+        catch
+        {
+            confirmationMessage = "Image failed to upload";
+        }
+    }
 }

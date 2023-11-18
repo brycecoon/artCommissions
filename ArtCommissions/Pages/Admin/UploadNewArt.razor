@@ -48,7 +48,7 @@
 
     private async Task SaveFileToDatabase()
     {
-        if (file == null) { return; }
+        if (file == null) { confirmationMessage = "no file selected";  return; }
 
         try
         {
