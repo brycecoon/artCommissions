@@ -1,19 +1,48 @@
 ﻿@page "/prices"
 @using ArtCommissions.Data;
 @using Microsoft.EntityFrameworkCore;
+@using Microsoft.AspNetCore.Components.Web;
 @inject IDbContextFactory<PostgresContext> contextFactory
 
 <h3>ExamplesAndPrices</h3>
 
-@foreach(var row in Commissions)
-{//make a carousel for each row
-    <h3>Commission Type: @row.CommissionType</h3>
-    <p>Price Adder: @row.Price</p>
-    <p>Description: @row.Description</p>
+@if (exampleImages is not null)
+{
+    <div class="control-container w-75">
+        @foreach(var row in Commissions){
+        <SfCarousel>
+            @foreach (var row2 in exampleImages)
+            {
+                    @if (row.Id == row2.CommissionExampleId)
+                    {
+                        <CarouselItem>
+                            <figure class="img-container">
+                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(row2.Image)" alt="Los Angeles" class="d-block w-100">
+                        <h3>Commission Type: @row.CommissionType</h3>
+                        <p>Price Adder: @row.Price</p>
+                        <p>Description: @row.Description</p>
+                    </figure>
+                </CarouselItem> }
+            }
+        </SfCarousel>
+            }
+    </div>
+}
+else
+{
+    <p>No image</p>
 }
 
 @code {
+    [Parameter]
+    public int ArtistID { get; set; } = 1;
+    private IEnumerable<ExampleImage>? exampleImages { get; set; }
+    public string? Name { get; set; }
+    public string? About { get; set; }
+    private List<int[]> imageBytes { get; set; } = new();
+    private byte[]? pfp { get; set; }
     private IEnumerable<CommissionExample>? Commissions;
+    private List<int> imageid { get; set; } = new();
 
 
     protected override async Task OnInitializedAsync()
@@ -21,7 +50,22 @@
         var context = contextFactory.CreateDbContext();
 
         Commissions = context.CommissionExamples.ToArray();
+
+        var artist = await context.Artists
+            .Include(a => a.Socials)
+            .FirstOrDefaultAsync(i => i.Id == ArtistID);
+
+        exampleImages = await context.ExampleImages
+            .Where(i => i.IsInCarousel == true)
+            .ToListAsync();
+
+        // foreach (ExampleImage e in exampleImages)
+        // {
+        //     imageBytes.Add(e.Image);
+        //     imageid.Add(e.Id);
+        // }
     }
+    
 
     //TODO: fill in the database with example sizes, price connected to it: DONE
 
