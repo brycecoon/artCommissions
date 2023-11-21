@@ -1,10 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
 namespace ArtCommissions.Data;
 
-public class PostgresContext : IdentityDbContext
+public partial class PostgresContext : DbContext
 {
+    public PostgresContext()
+    {
+    }
+
     public PostgresContext(DbContextOptions<PostgresContext> options)
         : base(options)
     {
@@ -22,12 +27,15 @@ public class PostgresContext : IdentityDbContext
 
     public virtual DbSet<Social> Socials { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseNpgsql("Name=ConnectionStrings:db");
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //modelBuilder
-        //    .HasPostgresExtension("pg_catalog", "azure")
-        //    .HasPostgresExtension("pg_catalog", "pgaadauth")
-        //    .HasPostgresExtension("pg_cron");
+        modelBuilder
+            .HasPostgresExtension("pg_catalog", "azure")
+            .HasPostgresExtension("pg_catalog", "pgaadauth")
+            .HasPostgresExtension("pg_cron");
 
         modelBuilder.Entity<Artist>(entity =>
         {
@@ -163,6 +171,8 @@ public class PostgresContext : IdentityDbContext
                 .HasConstraintName("socials_artist_id_fkey");
         });
 
-        base.OnModelCreating(modelBuilder);
+        OnModelCreatingPartial(modelBuilder);
     }
+
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

@@ -27,7 +27,7 @@
 @if (imageBytes.Count != 0)
 {
     <div class="control-container w-75">
-        <SfCarousel>
+       <SfCarousel> 
             @foreach (byte[] image in imageBytes)
             {
                 <CarouselItem>
@@ -36,7 +36,7 @@
                     </figure>
                 </CarouselItem>
             }
-        </SfCarousel>
+       </SfCarousel> 
     </div>
 }
 else
