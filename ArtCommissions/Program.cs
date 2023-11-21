@@ -1,8 +1,9 @@
 using ArtCommissions.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.EntityFrameworkCore;
 using Syncfusion.Blazor;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,13 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSyncfusionBlazor();
 builder.Services.AddDbContextFactory<PostgresContext>(config => config.UseNpgsql(builder.Configuration.GetConnectionString("db")));
 
+//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<PostgresContext>();
+builder.Services.AddHostedService<DefaultUserService>();
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddDefaultUI()
+    .AddDefaultTokenProviders()
+    .AddEntityFrameworkStores<PostgresContext>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 builder.Services.AddAuthentication().AddGoogle(options =>
 {
@@ -22,6 +30,7 @@ builder.Services.AddAuthentication().AddGoogle(options =>
     options.ClaimActions.MapJsonKey("urn:google:image", "picture");
 }
 );
+
 
 //builder.Services.AddHttpContextAccessor();
 //builder.Services.AddScoped<IHttpContextAccessor>();
@@ -44,6 +53,8 @@ app.UseStaticFiles();
 app.UseCookiePolicy();
 app.UseAuthentication();
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
