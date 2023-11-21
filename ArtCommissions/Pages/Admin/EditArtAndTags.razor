@@ -1,8 +1,21 @@
 ﻿@page "/admin/edit_art"
+@using ArtCommissions.Data;
+@using Microsoft.EntityFrameworkCore;
+@inject IDbContextFactory<PostgresContext> contextFactory
 
 <h3>editArtAndTags</h3>
 
 @code {
     //TODO: Cycle through the art, click on one, and then be able to edit the tags
+    private IEnumerable<CommissionRequest>? Commissions;
 
+    [Parameter]
+    public int artistid { get; set; }
+    public int clients { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        var context = contextFactory.CreateDbContext();
+
+        Commissions = context.CommissionRequests.ToArray();
+    }
 }

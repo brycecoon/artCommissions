@@ -7,17 +7,19 @@
 
 <h3>modifyCommissionRequests</h3>
 
-<table>
-    <tr>
+<table class="table">
+    <thead>
         <th>name</th>
         <th>CommissionType</th>
         <th>Description</th>
         <th>email</th>
         <th>Cost</th>
         <th>AmmountPaid</th>
-    </tr>
+    </thead>
+    <tbody>
         @foreach (CommissionRequest cr in Commissions)
         {
+
     <tr>
             <td>
                 @cr.Firstname @cr.Lastname
@@ -42,6 +44,7 @@
             </td>
     </tr>
         }
+    </tbody>
 </table>
 
 @code {
