@@ -13,13 +13,16 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSyncfusionBlazor();
 builder.Services.AddDbContextFactory<PostgresContext>(config => config.UseNpgsql(builder.Configuration.GetConnectionString("db")));
 
-//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<PostgresContext>();
-//builder.Services.AddHostedService<DefaultUserService>();
+// DefaultUserService
+builder.Services.AddHostedService<DefaultUserService>();
 
+// Authentication / Authorization
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddDefaultUI()
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<PostgresContext>();
+
+// Google Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 builder.Services.AddAuthentication().AddGoogle(options =>
 {
@@ -31,14 +34,10 @@ builder.Services.AddAuthentication().AddGoogle(options =>
 }
 );
 
-
-//builder.Services.AddHttpContextAccessor();
-//builder.Services.AddScoped<IHttpContextAccessor>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<HttpClient>();
 
 var app = builder.Build();
- // Add this line
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
