@@ -39,7 +39,7 @@
 			@if (cr.AcceptedStatus == "PENDING")
 			{
 				<td>
-					<button @onclick="async () => {await Accept(cr);}" class="btn btn-primary">Accept</button>
+					<button @onclick="(async () => {await Accept(1);})" class="btn btn-primary">Accept</button>
 				</td>
 				<td>
 					<button @onclick="() => Deny(cr)" class="btn btn-danger">Deny</button> @*delete sets to null*@
@@ -60,12 +60,12 @@
 
 		Commissions = await context.CommissionRequests.Where(i => i.ArtistId == 1).ToListAsync();
 	}
-	public async Task Accept(CommissionRequest cr)
+	public async Task Accept(int i)
 	{
 		var context = contextFactory.CreateDbContext();
 
 		CommissionRequest crtoupdate = await context.CommissionRequests
-						.Where(c => c.Id == cr.Id)
+						.Where(c => c.Id == i)
 					.FirstOrDefaultAsync();
 
 		if (crtoupdate != null)
