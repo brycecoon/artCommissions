@@ -8,54 +8,82 @@
 <h3>modifyCommissionRequests</h3>
 
 <table class="table">
-    <thead>
-        <th>name</th>
-        <th>CommissionType</th>
-        <th>Description</th>
-        <th>email</th>
-        <th>Cost</th>
-        <th>AmmountPaid</th>
-    </thead>
-    <tbody>
-        @foreach (CommissionRequest cr in Commissions)
-        {
-
-    <tr>
-            <td>
-                @cr.Firstname @cr.Lastname
-            </td>
-            <td>
-                 @cr.CommissionType
-            </td>
-            <td>
-                @cr.Email
-            </td>
-            <td>
-                @cr.CommissionCost
-            </td>
-            <td>
-                @cr.AmmountAlreadyPaid
-            </td>
-            <td>
-                <button class="btn btn-primary">accept</button>
-            </td>
-            <td>
-                <button class="btn btn-danger">deny</button>
-            </td>
-    </tr>
-        }
-    </tbody>
+	<thead>
+	<th>name</th>
+	<th>CommissionType</th>
+	<th>Description</th>
+	<th>email</th>
+	<th>Cost</th>
+	<th>AmmountPaid</th>
+	</thead>
+	<tbody>
+		@foreach (CommissionRequest cr in Commissions)
+		{
+			<tr>
+				<td>
+					@cr.Firstname @cr.Lastname
+				</td>
+				<td>
+					@cr.CommissionType
+				</td>
+				<td>@cr.Details</td>
+				<td>
+					@cr.Email
+				</td>
+				<td>
+					@cr.CommissionCost
+				</td>
+				<td>
+					@cr.AmmountAlreadyPaid
+				</td>
+				@if (cr.AcceptedStatus == "PENDING")
+				{
+					<td>
+						<button @onclick="(() =>Accept(cr))" class="btn btn-primary">Accept</button>
+					</td>
+					<td>
+						<button @onclick="() => Deny(cr)" class="btn btn-danger">Deny</button> @*delete sets to null*@
+					</td>
+				}
+			</tr>
+		}
+	</tbody>
 </table>
 
 @code {
-    //TODO: display for each commission the client name, description, type, estimated time, and estimated cost
-    
-    public List<CommissionRequest> Commissions = new();
-    protected override async Task OnInitializedAsync()
-    {
-        var context = contextFactory.CreateDbContext();
+	//TODO: display for each commission the client name, description, type, estimated time, and estimated cost
 
-        Commissions = await context.CommissionRequests.Where(i => i.ArtistId == 1).ToListAsync();
-    }
+	public List<CommissionRequest> Commissions = new();
+	protected override async Task OnInitializedAsync()
+	{
+		var context = contextFactory.CreateDbContext();
+
+		Commissions = await context.CommissionRequests.Where(i => i.ArtistId == 1).ToListAsync();
+	}
+	public void Accept(CommissionRequest cr)
+	{
+		var context = contextFactory.CreateDbContext();
+
+		CommissionRequest crtoupdate = context.CommissionRequests
+						.Where(c => c.Id == cr.Id)
+						.FirstOrDefault();
+
+
+
+		if (crtoupdate != null)
+		{
+			crtoupdate.AcceptedStatus =  "ACCEPTED";
+		}
+
+		context.SaveChangesAsync();
+
+	}
+	public void Deny(CommissionRequest cr)
+	{
+		var context = contextFactory.CreateDbContext();
+		context.Add(cr);
+		cr.AcceptedStatus = null;
+		context.SaveChangesAsync();
+	}
 
 }
