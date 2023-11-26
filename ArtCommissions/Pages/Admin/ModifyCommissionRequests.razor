@@ -8,46 +8,46 @@
 <h3>modifyCommissionRequests</h3>
 
 <table class="table">
-	<thead>
-	<th>name</th>
-	<th>CommissionType</th>
-	<th>Description</th>
-	<th>email</th>
-	<th>Cost</th>
-	<th>AmmountPaid</th>
-	</thead>
-	<tbody>
-		@foreach (CommissionRequest cr in Commissions)
-		{
-			<tr>
+	<tr>
+		<th>name</th>
+		<th>CommissionType</th>
+		<th>Description</th>
+		<th>email</th>
+		<th>Cost</th>
+		<th>AmmountPaid</th>
+	</tr>
+
+	@foreach (CommissionRequest cr in Commissions)
+	{
+		<tr>
+			<td>
+				@cr.Firstname @cr.Lastname
+			</td>
+			<td>
+				@cr.CommissionType
+			</td>
+			<td>@cr.Details</td>
+			<td>
+				@cr.Email
+			</td>
+			<td>
+				@cr.CommissionCost
+			</td>
+			<td>
+				@cr.AmmountAlreadyPaid
+			</td>
+			@if (cr.AcceptedStatus == "PENDING")
+			{
 				<td>
-					@cr.Firstname @cr.Lastname
+					<button @onclick="async () => {await Accept(cr);}" class="btn btn-primary">Accept</button>
 				</td>
 				<td>
-					@cr.CommissionType
+					<button @onclick="() => Deny(cr)" class="btn btn-danger">Deny</button> @*delete sets to null*@
 				</td>
-				<td>@cr.Details</td>
-				<td>
-					@cr.Email
-				</td>
-				<td>
-					@cr.CommissionCost
-				</td>
-				<td>
-					@cr.AmmountAlreadyPaid
-				</td>
-				@if (cr.AcceptedStatus == "PENDING")
-				{
-					<td>
-						<button @onclick="async () => {await Accept(cr);}" class="btn btn-primary">Accept</button>
-					</td>
-					<td>
-						<button @onclick="() => Deny(cr)" class="btn btn-danger">Deny</button> @*delete sets to null*@
-					</td>
-				}
-			</tr>
-		}
-	</tbody>
+			}
+		</tr>
+	}
+
 </table>
 
 @code {
@@ -66,15 +66,15 @@
 
 		CommissionRequest crtoupdate = await context.CommissionRequests
 						.Where(c => c.Id == cr.Id)
-						.FirstOrDefaultAsync();
+					.FirstOrDefaultAsync();
 
 		if (crtoupdate != null)
 		{
-			crtoupdate.AcceptedStatus =  "ACCEPTED";
+			crtoupdate.AcceptedStatus = "ACCEPTED";
 		}
 
-		context.SaveChangesAsync();
-		
+		await context.SaveChangesAsync();
+
 	}
 	public void Deny(CommissionRequest cr)
 	{
