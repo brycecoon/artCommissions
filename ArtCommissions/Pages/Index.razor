@@ -18,7 +18,7 @@
 					<img class="d-block w-100 rounded-circle" src="data:image/jpeg;base64,@Convert.ToBase64String(imageBytes[2])">
 				</div>
 			</div>
-			<div class="col-md-2 flex-column flex-grow-1">
+			@* <div class="col-md-2 flex-column flex-grow-1">
 				<div id="@carouselName" class="carousel slide w-50" data-bs-ride="carousel" data-bs-wrap="true" data-bs-interval="2000" data-bs-pause="false">
 					<div class="carousel-indicators">
 						<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -45,7 +45,7 @@
 						<span class="visually-hidden">Next</span>
 					</button>
 				</div>
-			</div>
+			</div> *@
 		</div>
 		<div class="row">
 			<div class="border border-success">
@@ -111,9 +111,9 @@ else
 		pfp = artist.Profilepic;
 	}
 
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		object[] args = { carouselName };
-		await JSRuntime.InvokeVoidAsync("startCarousel", args); // NOTE: call JavaScript function with the ID of the carousel
-	}
+	// protected override async Task OnAfterRenderAsync(bool firstRender)
+	// {
+	// 	object[] args = { carouselName };
+	// 	await JSRuntime.InvokeVoidAsync("startCarousel", args); // NOTE: call JavaScript function with the ID of the carousel
+	// }
 }
