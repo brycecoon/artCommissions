@@ -1,12 +1,23 @@
 ﻿<AuthorizeView>
     <Authorized>
-        <a href="Identity/Account/Manage">Hello, @context.User.Identity?.Name!</a>
-        <form method="post" action="Identity/Account/Logout">
-            <button type="submit" class="nav-link btn btn-link">Log out</button>
-        </form>
+        <div class="nav-item px-3 d-flex align-items-center">
+            <NavLink class="nav-link" href="/admin/commissions">
+                <form method="post" action="Identity/Account/Logout">
+                    <button type="submit" class="nav-link btn btn-link">Log out</button>
+                </form>
+            </NavLink>
+        </div>
     </Authorized>
     <NotAuthorized>
-        <a href="Identity/Account/Register">Register</a>
-        <a href="Identity/Account/Login">Log in</a>
+        <div class="nav-item px-3 d-flex align-items-center">
+            <NavLink class="nav-link" href="href=Identity/Account/Register">
+                <span aria-hidden="true"></span> Register
+            </NavLink>
+        </div>
+        <div class="nav-item px-3 d-flex align-items-center">
+            <NavLink class="nav-link" href="Identity/Account/Login">
+                <span aria-hidden="true"></span> Log in
+            </NavLink>
+        </div>
     </NotAuthorized>
 </AuthorizeView>

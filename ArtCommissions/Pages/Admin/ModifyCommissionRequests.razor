@@ -5,57 +5,75 @@
 
 @inject IDbContextFactory<PostgresContext> contextFactory
 
-<h3>modifyCommissionRequests</h3>
+<h3>Modify Commission Requests</h3>
 
-<table class="table">
-    <thead>
-        <th>name</th>
-        <th>CommissionType</th>
-        <th>Description</th>
-        <th>email</th>
-        <th>Cost</th>
-        <th>AmmountPaid</th>
-    </thead>
-    <tbody>
-        @foreach (CommissionRequest cr in Commissions)
-        {
+<table class="table table-striped">
+	<tr>
+		<th scope="col">ID</th>
+		<th scope="col">Name</th>
+		<th scope="col">Commission Type</th>
+		<th scope="col">Description</th>
+		<th scope="col">Email</th>
+		<th scope="col">Cost</th>
+		<th scope="col">Amount Paid</th>
+	</tr>
+	<tbody>
+		@foreach (CommissionRequest cr in Commissions)
+		{
+			<tr>
+				<th scope="row">@cr.Id</th>
+				<td>@cr.Firstname @cr.Lastname</td>
+				<td>@cr.CommissionType</td>
+				<td>@cr.Details</td>
+				<td>@cr.Email</td>
+				<td>@cr.CommissionCost</td>
+				<td>@cr.AmmountAlreadyPaid</td>
 
-    <tr>
-            <td>
-                @cr.Firstname @cr.Lastname
-            </td>
-            <td>
-                 @cr.CommissionType
-            </td>
-            <td>
-                @cr.Email
-            </td>
-            <td>
-                @cr.CommissionCost
-            </td>
-            <td>
-                @cr.AmmountAlreadyPaid
-            </td>
-            <td>
-                <button class="btn btn-primary">accept</button>
-            </td>
-            <td>
-                <button class="btn btn-danger">deny</button>
-            </td>
-    </tr>
-        }
-    </tbody>
+				@if (cr.AcceptedStatus == "PENDING")
+				{
+					<td>
+						<button @onclick="async () => await Accept(cr.Id)" class="btn btn-primary">Accept</button>
+					</td>
+					<td>
+						<button @onclick="() => Deny(cr)" class="btn btn-danger">Deny</button> @*delete sets to null*@
+					</td>
+				}
+			</tr>
+		}
+	</tbody>
 </table>
 
 @code {
-    //TODO: display for each commission the client name, description, type, estimated time, and estimated cost
-    
-    public List<CommissionRequest> Commissions = new();
-    protected override async Task OnInitializedAsync()
-    {
-        var context = contextFactory.CreateDbContext();
+	//TODO: display for each commission the client name, description, type, estimated time, and estimated cost
 
-        Commissions = await context.CommissionRequests.Where(i => i.ArtistId == 1).ToListAsync();
-    }
+	public List<CommissionRequest> Commissions = new();
+	protected override async Task OnInitializedAsync()
+	{
+		var context = contextFactory.CreateDbContext();
 
+		Commissions = await context.CommissionRequests.Where(i => i.ArtistId == 1).ToListAsync();
+	}
+	public async Task Accept(int id)
+	{
+		var context = contextFactory.CreateDbContext();
+
+		CommissionRequest? crtoupdate = await context.CommissionRequests
+			.Where(c => c.Id == id)
+			.FirstOrDefaultAsync();
+
+		if (crtoupdate != null)
+		{
+			crtoupdate.AcceptedStatus = "ACCEPTED";
+		}
+
+		await context.SaveChangesAsync();
+
+	}
+	public async Task Deny(CommissionRequest cr)
+	{
+		var context = contextFactory.CreateDbContext();
+		cr.AcceptedStatus = null;
+		context.Add(cr);
+		await context.SaveChangesAsync();
+	}
 }
