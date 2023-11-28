@@ -3,7 +3,7 @@
 @using Microsoft.EntityFrameworkCore;
 @inject IDbContextFactory<PostgresContext> contextFactory
 
-<h3>Form1</h3>
+@* <h3>Form1</h3>
 <form>
     <label for="fname">First name:</label><br>
     <input type="text" id="fname" name="fname"><br>
@@ -11,7 +11,7 @@
     <input type="text" id="lname" name="lname"><br>
     <label for="lname">Email:</label><br>
     <input type="text" id="email" name="email"><br>
-    <label for="lname">Commission Type:</label><br> @*Come from eamples and prices later*@
+    <label for="lname">Commission Type:</label><br>
     <input type="range" id="commission" name="commission"><br>
     <label for="lname">Extra Details</label><br>
     <input type="text" id="details" name="details"><br>
@@ -27,15 +27,69 @@
         <p class="dissapear">@confirmationMessage</p>
         //using the class make the message dissapear
     }
-</form>
+</form> *@
+
+<div class="container p-3 border">
+
+    <div class="container p-2 my-3 d-flex flex-column justify-content-center border border-success">
+        <label class="form-label mx-4">What's your name?</label>
+
+        <div class="form-group p-2 d-flex flex-row justify-content-around">
+            <span class="flex-fill mx-3">
+                <input class="form-control" aria-describedby="nameHelp" placeholder="Enter Name">
+            </span>
+            <span class="flex-fill mx-3">
+                <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Enter email">
+                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+            </span>
+        </div>
+    </div>
+
+    <div class="container p-2 my-3 d-flex flex-column justify-content-center border border-success">
+        <label class="form-label mx-4">What do you want me to draw?</label>
+
+        <div class="form-group p-2 mx-3">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                <label class="form-check-label" for="flexRadioDefault1">
+                    Icon
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                <label class="form-check-label" for="flexRadioDefault1">
+                    Background
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="container p-2 my-3 d-flex flex-column justify-content-center border border-success">
+        <label class="form-label mx-4" placeholder="name@example.com">Please describe what you are thinking! Background (colored or grayscale, painted style?), Perspective ("from the sky, from below"), Pose ("slouched over, heroic...") or anything else you want me to include.</label>
+
+        <div class="form-group mx-3">
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+        </div>
+    </div>
+
+    <div class="container p-2 d-flex align-items-center border border-primary">
+        <div class="form-group p-2 d-flex flex-row justify-content-around">
+            <span class="flex-fill mx-3">
+                <label class="form-label">Here's the cost:</label>
+            </span>
+            <p>$100</p>
+        </div>
+
+    </div>
+</div>
 
 
 @code {
     //get upload logic from the test component, make it look nice
-    private byte[] imageBytes { get; set; } = null;
-    private byte[] uploadImagesBytes { get; set; } = null;
+    private byte[]? imageBytes { get; set; } = null;
+    private byte[]? uploadImagesBytes { get; set; } = null;
     private IBrowserFile? file = null;
-    private string confirmationMessage = null;
+    private string? confirmationMessage = null;
 
 
 
@@ -43,9 +97,9 @@
     {
         var context = contextFactory.CreateDbContext();
 
-        var art = await context.ExampleImages
-            .FirstOrDefaultAsync(i => i.Id == 1);
-        imageBytes = art.Image;
+        // var art = await context.ExampleImages
+        //     .FirstOrDefaultAsync(i => i.Id == 1);
+        // imageBytes = art.Image;
     }
 
 
