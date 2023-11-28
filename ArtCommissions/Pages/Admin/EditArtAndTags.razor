@@ -4,18 +4,137 @@
 @inject IDbContextFactory<PostgresContext> contextFactory
 
 <h3>editArtAndTags</h3>
+@if (exampleImages is not null)
+    @foreach (var row in exampleImages)
+    {
+        {
+            <div class="img-container">
+                <img src="data:image/jpeg;base64,@Convert.ToBase64String(row.Image)" alt="Los Angeles" class="d-block w-100">
+                @if (row.CommissionExampleId.HasValue && commissions != null)
+                {
+                    <p>Commission type: @commissions[row.CommissionExampleId.Value]?.CommissionType</p>
+                }
+                else
+                {
+                    <p>Commission type: N/A</p>
+                }
+
+                <select value="@selectedCommissions[row.Id]" @onchange="e => HandleCommissionChange(row.Id, e.Value.ToString())">
+                    @foreach (var row2 in commissions)
+                    {
+                        <option value="@row2.CommissionType">@row2.CommissionType</option>
+                    }
+                    <option>No Type</option>
+                </select>
+
+                <p>Show this image in the Carousel?</p>
+                <input type="radio" @onchange="() => isInCarousel = true" name="carousel">
+                <label for="inCarousel">Yes</label>
+                <input type="radio" @onchange="() => isInCarousel = false" name="carousel">
+                <label for="notInCarousel">No</label>
+
+
+                <button @onclick="() => EditTag(row)">Save New Type</button>
+                <button @onclick="() => Deny(row)" class="btn btn-danger">Delete Image</button>
+            </div>
+        }
+    }
 
 @code {
     //TODO: Cycle through the art, click on one, and then be able to edit the tags
-    private IEnumerable<CommissionRequest>? Commissions;
+    public int ArtistID { get; set; } = 1;
+    private List<ExampleImage>? exampleImages { get; set; }
+    private List<int[]> imageBytes { get; set; } = new();
+    private byte[]? pfp { get; set; }
+    private List<CommissionExample>? commissions;
+    private List<int> imageid { get; set; } = new();
+    private string selectedCommission;
+    private Dictionary<int, string> selectedCommissions { get; set; } = new Dictionary<int, string>();
+    private bool isInCarousel;
 
-    [Parameter]
-    public int artistid { get; set; }
-    public int clients { get; set; }
     protected override async Task OnInitializedAsync()
     {
         var context = contextFactory.CreateDbContext();
 
-        Commissions = context.CommissionRequests.ToArray();
+        commissions = await context.CommissionExamples
+        .OrderBy(c => c.Id)
+        .ToListAsync();
+
+        exampleImages = await context.ExampleImages
+            .ToListAsync();
+
+        foreach (var image in exampleImages)
+        {
+            selectedCommissions[image.Id] = commissions[image.CommissionExampleId.GetValueOrDefault()].CommissionType;
+        }
+    }
+
+    private void HandleCommissionChange(int imageId, string value)
+    {
+        selectedCommissions[imageId] = value;
+    }
+
+    public async Task Deny(ExampleImage cr)
+    {
+        using (var context = contextFactory.CreateDbContext())
+        {
+            var request = await context.ExampleImages
+                .Where(c => c.Id == cr.Id)
+                .FirstOrDefaultAsync();
+
+            if (request != null)
+            {
+                // Mark the entity for deletion
+                context.ExampleImages.Remove(request);
+
+                // Save changes to the database
+                await context.SaveChangesAsync();
+            }
+        }
+    }
+
+    public async Task EditTag(ExampleImage cr)
+    {
+        if (cr is null)
+        {
+            throw new ArgumentNullException(nameof(cr));
+        }
+
+        using (var context = contextFactory.CreateDbContext())
+        {
+            var request = await context.ExampleImages
+                .Where(c => c.Id == cr.Id)
+                .FirstOrDefaultAsync();
+
+
+            if (request != null)
+            {
+                var selectedCommission = selectedCommissions[cr.Id];
+
+                var newType = await context.CommissionExamples
+                .Where(c => c.CommissionType == selectedCommission)
+                .FirstOrDefaultAsync();
+
+                if (newType != null || selectedCommission == "No Type")
+                {
+                    if (selectedCommission == "No Type")
+                    { request.CommissionExampleId = null; }
+                    else
+                    // Edit what you need to
+                    {
+                        request.CommissionExampleId = newType.Id;
+                    }
+
+                    // Save changes to the database
+                }
+
+                if (isInCarousel)
+                    request.IsInCarousel = true;
+                else
+                    request.IsInCarousel = false;
+
+                await context.SaveChangesAsync();
+            }
+        }
     }
 }

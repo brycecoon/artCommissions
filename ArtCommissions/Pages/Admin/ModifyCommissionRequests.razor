@@ -53,6 +53,7 @@
 
 		Commissions = await context.CommissionRequests.Where(i => i.ArtistId == 1).ToListAsync();
 	}
+
 	public async Task Accept(int id)
 	{
 		var context = contextFactory.CreateDbContext();
@@ -69,11 +70,16 @@
 		await context.SaveChangesAsync();
 
 	}
+
 	public async Task Deny(CommissionRequest cr)
 	{
 		var context = contextFactory.CreateDbContext();
-		cr.AcceptedStatus = null;
-		context.Add(cr);
+
+		var request = await context.CommissionRequests
+			.Where(c => c.Id == cr.Id)
+			.FirstOrDefaultAsync();
+
+		request.AcceptedStatus = null;
 		await context.SaveChangesAsync();
 	}
 }

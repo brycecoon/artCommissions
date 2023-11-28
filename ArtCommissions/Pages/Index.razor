@@ -8,112 +8,112 @@
 @if (imageBytes.Count != 0)
 {
 
-	<div class="container w-100 border border">
-		<div class="row">
-			<h1 class="text-center"> @Name</h1>
-		</div>
-		<div class="row flex-md-grow-1">
-			<div class="col-md-1 flex-column">
-				<div>
-					<img class="d-block w-100 rounded-circle" src="data:image/jpeg;base64,@Convert.ToBase64String(imageBytes[2])">
-				</div>
-			</div>
-			@* <div class="col-md-2 flex-column flex-grow-1">
-				<div id="@carouselName" class="carousel slide w-50" data-bs-ride="carousel" data-bs-wrap="true" data-bs-interval="2000" data-bs-pause="false">
-					<div class="carousel-indicators">
-						<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-						<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-						<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
-					</div>
-					<div class="carousel-inner">
-						<div class="carousel-item active">
-							<img class="d-block w-100" src="data:image/jpeg;base64,@Convert.ToBase64String(imageBytes[0])">
-						</div>
-						<div class="carousel-item">
-							<img class="d-block w-100" src="data:image/jpeg;base64,@Convert.ToBase64String(imageBytes[1])">
-						</div>
-						<div class="carousel-item">
-							<img class="d-block w-100" src="data:image/jpeg;base64,@Convert.ToBase64String(imageBytes[2])">
-						</div>
-					</div>
-					<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-						<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-						<span class="visually-hidden">Previous</span>
-					</button>
-					<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-						<span class="carousel-control-next-icon" aria-hidden="true"></span>
-						<span class="visually-hidden">Next</span>
-					</button>
-				</div>
-			</div> *@
-		</div>
-		<div class="row">
-			<div class="border border-success">
-				<p> about me: @About</p>
-			</div>
-		</div>
-		<div class="row">
-			<div class="border border-danger">
-				@if (Socials is not null)
-				{
-					@foreach (Social row in Socials)
-					{
-						<p>@row.Site : <a href="@row.Link">@row.Link</a></p>
-					}
-				}
-				else
-				{
-					<p>no socials found</p>
-				}
-			</div>
+    <div class="container w-100 border border">
+        <div class="row">
+            <h1 class="text-center"> @Name</h1>
+        </div>
+        <div class="row flex-md-grow-1">
+            <div class="col-md-1 flex-column">
+                <div>
+                    <img class="d-block w-100 rounded-circle" src="data:image/jpeg;base64,@Convert.ToBase64String(imageBytes[0])">
+                </div>
+            </div>
+            @* <div class="col-md-2 flex-column flex-grow-1">
+        <div id="@carouselName" class="carousel slide w-50" data-bs-ride="carousel" data-bs-wrap="true" data-bs-interval="2000" data-bs-pause="false">
+        <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+        <div class="carousel-item active">
+        <img class="d-block w-100" src="data:image/jpeg;base64,@Convert.ToBase64String(imageBytes[0])">
+        </div>
+        <div class="carousel-item">
+        <img class="d-block w-100" src="data:image/jpeg;base64,@Convert.ToBase64String(imageBytes[1])">
+        </div>
+        <div class="carousel-item">
+        <img class="d-block w-100" src="data:image/jpeg;base64,@Convert.ToBase64String(imageBytes[2])">
+        </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+        </button>
+        </div>
+        </div> *@
+        </div>
+        <div class="row">
+            <div class="border border-success">
+                <p> about me: @About</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="border border-danger">
+                @if (Socials is not null)
+                {
+                    @foreach (Social row in Socials)
+                    {
+                        <p>@row.Site : <a href="@row.Link">@row.Link</a></p>
+                    }
+                }
+                else
+                {
+                    <p>no socials found</p>
+                }
+            </div>
 
-		</div>
-	</div>
+        </div>
+    </div>
 }
 else
 {
-	<p>No image</p>
+    <p>No image</p>
 }
 
 @code {
-	//TODO: still need to make artist profile table in our database (profile picture)
-	[Parameter]
-	public int ArtistID { get; set; } = 1;
-	public string? Name { get; set; }
-	public string? About { get; set; }
-	public IEnumerable<Social>? Socials { get; set; } = null;
-	private List<byte[]> imageBytes { get; set; } = new();
-	private byte[]? pfp { get; set; }
-	const string carouselName = "carouselExampleIndicators"; // NOTE: the ID of the carousel
+    //TODO: still need to make artist profile table in our database (profile picture)
+    [Parameter]
+    public int ArtistID { get; set; } = 1;
+    public string? Name { get; set; }
+    public string? About { get; set; }
+    public IEnumerable<Social>? Socials { get; set; } = null;
+    private List<byte[]> imageBytes { get; set; } = new();
+    private byte[]? pfp { get; set; }
+    const string carouselName = "carouselExampleIndicators"; // NOTE: the ID of the carousel
 
 
-	protected override async Task OnInitializedAsync()
-	{
-		using var context = contextFactory.CreateDbContext();
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = contextFactory.CreateDbContext();
 
-		var artist = await context.Artists
-			.Include(a => a.Socials)
-			.FirstOrDefaultAsync(i => i.Id == ArtistID);
+        var artist = await context.Artists
+            .FirstOrDefaultAsync(i => i.Id == ArtistID);
 
-		var exampleImages = await context.ExampleImages
-			.Where(i => i.CommissionExampleId == 0)
-			.Where(i => i.IsInCarousel == true)
-			.ToListAsync();
+        var exampleImages = await context.ExampleImages
+            .Where(i => i.IsInCarousel == true)
+            .ToListAsync();
 
-		foreach (ExampleImage e in exampleImages)
-		{
-			imageBytes.Add(e.Image);
-		}
+        foreach (ExampleImage e in exampleImages)
+        {
+            imageBytes.Add(e.Image);
+        }
 
-		Name = $"{artist.Firstname} {artist.Lastname}";
-		About = artist.Aboutme;
-		Socials = artist.Socials;
-		pfp = artist.Profilepic;
-	}
 
-	// protected override async Task OnAfterRenderAsync(bool firstRender)
-	// {
-	// 	object[] args = { carouselName };
-	// 	await JSRuntime.InvokeVoidAsync("startCarousel", args); // NOTE: call JavaScript function with the ID of the carousel
-	// }
+        Name = $"{artist.Firstname} {artist.Lastname}";
+        About = artist.Aboutme;
+        Socials = artist.Socials;
+        pfp = artist.Profilepic;
+
+    }
+
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    // 	object[] args = { carouselName };
+    // 	await JSRuntime.InvokeVoidAsync("startCarousel", args); // NOTE: call JavaScript function with the ID of the carousel
+    // }
 }
