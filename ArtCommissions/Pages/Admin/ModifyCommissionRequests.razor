@@ -18,10 +18,14 @@
 		<th scope="col">Amount Paid</th>
 	</tr>
 	<tbody>
+		
 		@foreach (CommissionRequest cr in Commissions)
 		{
+			if(cr.AcceptedStatus == "ACCEPTED" || cr.AcceptedStatus == "PENDING")
+			{
+				
 			<tr>
-				<th scope="row">@cr.Id</th>
+				@*<th scope="row">@cr.Id</th>*@
 				<td>@cr.Firstname @cr.Lastname</td>
 				<td>@cr.CommissionType</td>
 				<td>@cr.Details</td>
@@ -30,22 +34,34 @@
 				<td>@cr.AmmountAlreadyPaid</td>
 
 				@if (cr.AcceptedStatus == "PENDING")
-				{
+					{
 					<td>
-						<button @onclick="async () => await Accept(cr.Id)" class="btn btn-primary">Accept</button>
+						<button
+							@onclick="async () => {
+									await Accept(cr.Id);
+								}" 
+							class="btn btn-primary" aria-disabled="false";>
+								Accept
+						</button>
 					</td>
 					<td>
-						<button @onclick="() => Deny(cr)" class="btn btn-danger">Deny</button> @*delete sets to null*@
+						<button 
+							@onclick="() => {
+									Deny(cr); 
+									Commissions.Remove(cr); 
+								}"
+							class="btn btn-danger" aria-disabled="false";>
+								Deny
+						</button> @*delete sets to null*@
 					</td>
 				}
 			</tr>
+			}
 		}
 	</tbody>
 </table>
 
 @code {
-	//TODO: display for each commission the client name, description, type, estimated time, and estimated cost
-
 	public List<CommissionRequest> Commissions = new();
 	protected override async Task OnInitializedAsync()
 	{
@@ -66,9 +82,7 @@
 		{
 			crtoupdate.AcceptedStatus = "ACCEPTED";
 		}
-
 		await context.SaveChangesAsync();
-
 	}
 
 	public async Task Deny(CommissionRequest cr)

@@ -84,7 +84,6 @@
 
 
 @code {
-    //get upload logic from the test component, make it look nice
     private byte[]? imageBytes { get; set; } = null;
     private byte[]? uploadImagesBytes { get; set; } = null;
     private IBrowserFile? file = null;
@@ -98,7 +97,10 @@
 
         var art = await context.ExampleImages
             .FirstOrDefaultAsync(i => i.Id == 1);
+        if ( art is not null)
+        {
         imageBytes = art.Image;
+        }
     }
 
 

@@ -37,7 +37,11 @@
 
         var art = await context.ExampleImages
             .FirstOrDefaultAsync(i => i.Id == 1);
+        if (art is not null)
+        {
+            
         imageBytes = art.Image;
+        }
     }
 
 
