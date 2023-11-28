@@ -1,38 +1,12 @@
-﻿@page "/form1"
+﻿@page "/create_request"
 @using ArtCommissions.Data;
 @using Microsoft.EntityFrameworkCore;
 @inject IDbContextFactory<PostgresContext> contextFactory
 
-@* <h3>Form1</h3>
-<form>
-    <label for="fname">First name:</label><br>
-    <input type="text" id="fname" name="fname"><br>
-    <label for="lname">Last name:</label><br>
-    <input type="text" id="lname" name="lname"><br>
-    <label for="lname">Email:</label><br>
-    <input type="text" id="email" name="email"><br>
-    <label for="lname">Commission Type:</label><br>
-    <input type="range" id="commission" name="commission"><br>
-    <label for="lname">Extra Details</label><br>
-    <input type="text" id="details" name="details"><br>
+<div class="container p-3 my-5 w-xs-25 w-lg-25 border rounded">
 
-    <img src="images/imageUpload.png" alt="Upload Image" />
-
-    <div class="my-3 d-flex">
-        <InputFile OnChange="@HandleFileChange" />
-        <button class="btn btn-primary d-inline mx-2" @onclick="SaveFileToDatabase">Upload</button>
-    </div>
-    @if (confirmationMessage is not null)
-    {
-        <p class="dissapear">@confirmationMessage</p>
-        //using the class make the message dissapear
-    }
-</form> *@
-
-<div class="container p-3 border">
-
-    <div class="container p-2 my-3 d-flex flex-column justify-content-center border border-success">
-        <label class="form-label mx-4">What's your name?</label>
+    <div class="container p-2 my-3 d-flex flex-column justify-content-center">
+        <label class="form-label mx-2">What's your name? <small class="text-danger">* This field is required</small></label>
 
         <div class="form-group p-2 d-flex flex-row justify-content-around">
             <span class="flex-fill mx-3">
@@ -45,8 +19,8 @@
         </div>
     </div>
 
-    <div class="container p-2 my-3 d-flex flex-column justify-content-center border border-success">
-        <label class="form-label mx-4">What do you want me to draw?</label>
+    <div class="container p-2 my-3 d-flex flex-column justify-content-center">
+        <label class="form-label mx-2">What do you want me to draw? <small class="text-danger">* This field is required</small></label>
 
         <div class="form-group p-2 mx-3">
             <div class="form-check">
@@ -64,24 +38,49 @@
         </div>
     </div>
 
-    <div class="container p-2 my-3 d-flex flex-column justify-content-center border border-success">
-        <label class="form-label mx-4" placeholder="name@example.com">Please describe what you are thinking! Background (colored or grayscale, painted style?), Perspective ("from the sky, from below"), Pose ("slouched over, heroic...") or anything else you want me to include.</label>
+    <div class="container p-2 my-3 d-flex flex-column justify-content-center">
+        <label class="form-label mx-2">Please describe what you are thinking! Background (colored or grayscale, painted style?), Perspective ("from the sky, from below"), Pose ("slouched over, heroic...") or anything else you want me to include.</label>
 
         <div class="form-group mx-3">
-            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+            <textarea class="form-control h-25" id="exampleFormControlTextarea1" rows="3">Type here...</textarea>
+            <small class="form-text text-muted">If you don't have anything in mind, just leave this empty</small>
         </div>
     </div>
 
-    <div class="container p-2 d-flex align-items-center border border-primary">
+    <div class="container p-2 my-3 d-flex flex-column justify-content-center">
+        <label class="form-label mx-2">Do you have an example? Any specific photo, art, or other media that will help me understand what you are thinking?</label>
+
+        <div class="form-group mx-3">
+            <div class="mb-3">
+                <InputFile OnChange="@HandleFileChange" />
+            </div>
+        </div>
+    </div>
+
+    <div class="container p-2 d-flex align-items-center">
         <div class="form-group p-2 d-flex flex-row justify-content-around">
-            <span class="flex-fill mx-3">
-                <label class="form-label">Here's the cost:</label>
+            <span class="flex-fill align-items-center">
+                <label class="form-label">Here's the cost: $100</label>
             </span>
-            <p>$100</p>
         </div>
 
+    </div>
+
+    <div class="p-2 my-3 d-flex justify-content-center border rounded">
+        <div class="d-flex align-self-stretch">
+            <label class="d-flex align-items-center">Is everything in order?</label>
+        </div>
+
+        <div class="mx-3">
+            <button class="btn btn-primary" @onclick="SaveFileToDatabase">Submit</button>
+        </div>
     </div>
 </div>
+@if (confirmationMessage is not null)
+{
+    <p class="dissapear">@confirmationMessage</p>
+    //using the class make the message dissapear
+}
 
 
 @code {
@@ -97,9 +96,9 @@
     {
         var context = contextFactory.CreateDbContext();
 
-        // var art = await context.ExampleImages
-        //     .FirstOrDefaultAsync(i => i.Id == 1);
-        // imageBytes = art.Image;
+        var art = await context.ExampleImages
+            .FirstOrDefaultAsync(i => i.Id == 1);
+        imageBytes = art.Image;
     }
 
 
