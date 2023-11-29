@@ -10,31 +10,28 @@
 
         <div class="form-group p-2 d-flex flex-row justify-content-around">
             <span class="flex-fill mx-3">
-                <input class="form-control" aria-describedby="nameHelp" placeholder="Enter Name">
+                <input class="form-control" aria-describedby="nameHelp" placeholder="Enter Name" @bind="Name">
             </span>
             <span class="flex-fill mx-3">
-                <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Enter email">
+                <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Enter email" @bind="Email">
                 <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
             </span>
         </div>
     </div>
 
     <div class="container p-2 my-3 d-flex flex-column justify-content-center">
-        <label class="form-label mx-2">What do you want me to draw? <small class="text-danger">* This field is required</small></label>
+        <label class="form-label mx-2" >What do you want me to draw? <small class="text-danger">* This field is required</small></label>
 
         <div class="form-group p-2 mx-3">
+            @foreach(var cr in commissionExamples)
+            {
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" @onchange="() => selectedType = cr.CommissionType">
                 <label class="form-check-label" for="flexRadioDefault1">
-                    Icon
+                    @cr.CommissionType
                 </label>
             </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-                <label class="form-check-label" for="flexRadioDefault1">
-                    Background
-                </label>
-            </div>
+            }
         </div>
     </div>
 
@@ -42,7 +39,7 @@
         <label class="form-label mx-2">Please describe what you are thinking! Background (colored or grayscale, painted style?), Perspective ("from the sky, from below"), Pose ("slouched over, heroic...") or anything else you want me to include.</label>
 
         <div class="form-group mx-3">
-            <textarea class="form-control h-25" id="exampleFormControlTextarea1" rows="3">Type here...</textarea>
+            <textarea class="form-control h-25" id="exampleFormControlTextarea1" rows="3" @bind="commissionDetails">Type here...</textarea>
             <small class="form-text text-muted">If you don't have anything in mind, just leave this empty</small>
         </div>
     </div>
@@ -72,10 +69,12 @@
         </div>
 
         <div class="mx-3">
-            <button class="btn btn-primary" @onclick="SaveFileToDatabase">Submit</button>
+            <button class="btn btn-primary" @onclick="async () => {await SaveFileToDatabase(CreateNewRequest()); }">Submit</button>
         </div>
     </div>
 </div>
+
+
 @if (confirmationMessage is not null)
 {
     <p class="dissapear">@confirmationMessage</p>
@@ -88,6 +87,13 @@
     private byte[]? uploadImagesBytes { get; set; } = null;
     private IBrowserFile? file = null;
     private string? confirmationMessage = null;
+    private List<CommissionExample> commissionExamples;
+    private List<CommissionRequest> commissionRequests;
+
+    private string Name;
+    private string Email;
+    private string commissionDetails;
+    private string selectedType;
 
 
 
@@ -96,20 +102,40 @@
         var context = contextFactory.CreateDbContext();
 
         var art = await context.ExampleImages
-            .FirstOrDefaultAsync(i => i.Id == 1);
+            .FirstOrDefaultAsync(i => i.Id == 1);           ///////////HARD CODED VALUE///////////////
+
         if ( art is not null)
         {
-        imageBytes = art.Image;
+            imageBytes = art.Image;
         }
+
+        var commissionRequests = await context.CommissionRequests
+            .ToListAsync();
+
+        var commissionExamples = await context.CommissionExamples
+            .ToListAsync();
+
     }
 
+
+    private CommissionRequest CreateNewRequest()
+    {
+        var request = new CommissionRequest();
+        request.Firstname = Name;
+        request.Email = Email;
+        request.Details = commissionDetails;
+        request.AcceptedStatus = "PENDING";
+        request.ArtistId = 1;                 /////////////////////////////////HARD CODED VALUE///////////////////////////
+        request.CommissionType = selectedType;
+        return request;
+    }
 
     private void HandleFileChange(InputFileChangeEventArgs e)
     {
         file = e.File;
     }
 
-    private async Task SaveFileToDatabase()
+    private async Task SaveFileToDatabase(CommissionRequest cr)
     {
         if (file == null) { confirmationMessage = "no file selected"; return; }
 
@@ -123,13 +149,14 @@
                 {
                     await stream.CopyToAsync(memoryStream);
 
-                    ExampleImage art = new ExampleImage()
+                    ReferenceImage art = new ReferenceImage()
                         {
-                            Image = memoryStream.ToArray()
+                            Image = memoryStream.ToArray(),
+                            CommissionRequestId = cr.Id
                         };
 
                     // Save to the database using DbContext
-                    await context.ExampleImages.AddAsync(art);
+                    await context.ReferenceImages.AddAsync(art);
                     await context.SaveChangesAsync();
                 }
             }

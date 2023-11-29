@@ -9,7 +9,6 @@
 
 <table class="table table-striped">
 	<tr>
-		<th scope="col">ID</th>
 		<th scope="col">Name</th>
 		<th scope="col">Commission Type</th>
 		<th scope="col">Description</th>
@@ -19,7 +18,7 @@
 	</tr>
 	<tbody>
 		
-		@foreach (CommissionRequest cr in Commissions)
+		@foreach (var cr in Commissions)
 		{
 			if(cr.AcceptedStatus == "ACCEPTED" || cr.AcceptedStatus == "PENDING")
 			{
