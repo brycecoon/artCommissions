@@ -21,9 +21,11 @@ namespace ArtAPI.Controllers
         public async Task<int> GetCount(int id)
         {
             _logger.LogInformation($"getting the number of commissions for artist {id}");
-            var commissions = await _service.GetCount(id);
+            int commissions = await _service.GetCount(id);
+
+
+
             return commissions;
         }
     }
-
 }

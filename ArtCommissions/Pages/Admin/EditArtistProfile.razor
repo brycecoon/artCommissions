@@ -3,8 +3,10 @@
 @using System.Drawing;
 @using System.IO;
 @using Microsoft.EntityFrameworkCore;
+@using System.Text.Json;
 @inject IDbContextFactory<PostgresContext> contextFactory
 @inject NavigationManager navManager
+@inject HttpClient httpclient
 
 
 
@@ -14,6 +16,7 @@
 <hr />
 <p> about me: @aboutme</p>
 <hr />
+<p> commission total : @result</p>
 
 
 @code {
@@ -23,8 +26,22 @@
     public string? fname { get; set; }
     public string? lname { get; set; }
     public string? aboutme { get; set; }
+    //public string? commissioncount { get; set;  }
+    public int result { get; set; }
     //public string? socials { get; set; }
-
+    public class CommissionResponse
+    {
+        public int Result { get; set; }
+        public int Id { get; set; }
+        public object Exception { get; set; }
+        public int Status { get; set; }
+        public bool IsCanceled { get; set; }
+        public bool IsCompleted { get; set; }
+        public bool IsCompletedSuccessfully { get; set; }
+        public int CreationOptions { get; set; }
+        public object AsyncState { get; set; } 
+        public bool IsFaulted { get; set; }
+    }
 
 
     protected override async Task OnInitializedAsync()
@@ -39,7 +56,20 @@
         lname = artist.Lastname;
         aboutme = artist.Aboutme;
         //socials = artist.Socials.;
-        
+        //var commissioncountjson = httpclient.GetFromJsonAsync<int> ("https://localhost:7087/CommissionRequest/1");
+        //commissioncount = JsonSerializer.Serialize<Task<int>>(commissioncountjson);
+
+        var commissioncountjson = await httpclient.GetFromJsonAsync<CommissionResponse>("https://localhost:7087/CommissionRequest/1");
+        if(commissioncountjson is null)
+        {
+            result = 0;
+        }
+        else
+        {
+            result = commissioncountjson.Result;
+        }
+       
+
 
     }
 
