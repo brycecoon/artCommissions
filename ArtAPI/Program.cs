@@ -20,7 +20,7 @@ builder.Services.AddDbContextFactory<PostgresContext>(options =>
 	options.UseNpgsql(builder.Configuration.GetConnectionString("db"));
 });
 
-builder.Services.AddScoped<ICommissionService, CommissionRequestService>();
+builder.Services.AddScoped<ICommissionService<CommissionRequest>, CommissionRequestService>();
 
 builder.Services.AddHttpClient();
 
