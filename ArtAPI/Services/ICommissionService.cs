@@ -1,8 +1,9 @@
-﻿namespace ArtAPI.Services
+﻿using ArtCommissions.Data;
+namespace ArtAPI.Services
 {
-	public interface ICommissionService<T>
+	public interface ICommissionService
 	{
-		Task<IEnumerable<T>> GetAll();
+		Task<IEnumerable<CommissionRequest>> GetAll();
 		Task<int> GetCount(int id);
 		//Task<T> Get(int id);
 		//Task<T> Add(T obj);

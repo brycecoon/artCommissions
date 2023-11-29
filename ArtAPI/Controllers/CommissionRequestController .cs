@@ -10,8 +10,8 @@ namespace ArtAPI.Controllers
     public class CommissionRequestController : Controller
     {
         private readonly ILogger<CommissionRequestController> _logger;
-        private ICommissionService<CommissionRequestService> _service;
-        public CommissionRequestController(ILogger<CommissionRequestController> logger, ICommissionService<CommissionRequestService> service)
+        private ICommissionService _service;
+        public CommissionRequestController(ILogger<CommissionRequestController> logger, ICommissionService service)
         {
             _logger = logger;
             _service = service;
