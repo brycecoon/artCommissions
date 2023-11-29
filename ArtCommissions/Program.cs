@@ -14,6 +14,7 @@ builder.Services.AddDbContextFactory<PostgresContext>(config => config.UseNpgsql
 // DefaultUserService
 builder.Services.AddHostedService<DefaultUserService>();
 
+
 // Authentication / Authorization
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddDefaultUI()
