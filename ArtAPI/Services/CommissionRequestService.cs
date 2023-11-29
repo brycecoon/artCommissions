@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ArtAPI.Services
 {
-	public class CommissionRequestService : ICommissionService
+	public class CommissionRequestService : ICommissionService<CommissionRequest>
 	{
 		private readonly ILogger<CommissionRequest> _logger;
 		private IDbContextFactory<PostgresContext> _contextfactory;
