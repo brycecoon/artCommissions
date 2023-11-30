@@ -3,10 +3,16 @@
 @using Microsoft.EntityFrameworkCore;
 @inject IDbContextFactory<PostgresContext> contextFactory
 
-<div class="container p-3 w-xs-25 w-lg-25 border rounded">
+<div class="container p-3 w-xs-25 w-lg-25">
 
     <div class="container p-2 my-3 d-flex flex-column justify-content-center">
-        <label class="form-label mx-2">What's your name? <small class="text-danger">* This field is required</small></label>
+        <label class="form-label mx-2">
+            What's your name?
+            @if (!nameSelected)
+            {
+                <small class="text-danger">* This field is required</small>
+            }
+        </label>
 
         <div class="form-group p-2 d-flex flex-row justify-content-around">
             <span class="flex-fill mx-3">
@@ -22,7 +28,13 @@
     @if (commissionExamples is not null)
     {
         <div class="container p-2 my-3 d-flex flex-column justify-content-center">
-            <label class="form-label mx-2" >What do you want me to draw? <small class="text-danger">* This field is required</small></label>
+            <label class="form-label mx-2">
+                What do you want me to draw?
+                @if (!typeSelected)
+                {
+                    <small class="text-danger">* This field is required</small>
+                }
+            </label>
 
             <div class="form-group p-2 mx-3">
                 @foreach (var cr in commissionExamples)
@@ -66,7 +78,7 @@
 
     </div>
 
-    <div class="p-2 my-3 d-flex justify-content-center border rounded">
+    <div class="p-2 my-3 d-flex justify-content-center">
         <div class="d-flex align-self-stretch">
             <label class="d-flex align-items-center">Is everything in order?</label>
         </div>
@@ -78,25 +90,18 @@
 </div>
 
 
-@if (confirmationMessage is not null)
-{
-    <p class="dissapear">@confirmationMessage</p>
-    //using the class make the message dissapear
-}
-
-
 @code {
     private byte[]? imageBytes { get; set; } = null;
-    private byte[]? uploadImagesBytes { get; set; } = null;
-    private IBrowserFile? file = null;
-    private string? confirmationMessage = null;
     private List<CommissionExample>? commissionExamples { get; set; }
     private List<CommissionRequest>? commissionRequests;
 
-    private string Name;
-    private string Email;
-    private string commissionDetails;
-    private string selectedType;
+    private bool nameSelected = true;
+    private bool typeSelected = true;
+
+    private string? Name = null;
+    private string Email = "";
+    private string commissionDetails = "";
+    private string? selectedType = null;
 
 
 
@@ -107,7 +112,7 @@
         var art = await context.ExampleImages
             .FirstOrDefaultAsync(i => i.Id == 1);           ///////////HARD CODED VALUE///////////////
 
-        if ( art is not null)
+        if (art is not null)
         {
             imageBytes = art.Image;
         }
@@ -125,8 +130,27 @@
     {
         using (var context = contextFactory.CreateDbContext())
         {
+            if (Name is null)
+            {
+                nameSelected = false;
+                return;
+            }
+            else
+            {
+                nameSelected = true;
+            }
+
+            if (selectedType is null)
+            {
+                typeSelected = false;
+                return;
+            }
+
             var request = new CommissionRequest();
-            request.Firstname = Name;
+
+            string[] n = Name.Split(" ");
+            request.Firstname = n[0];
+            request.Lastname = n.Count() == 1 ? "" : n[1];
             request.Email = Email;
             request.Details = commissionDetails;
             request.AcceptedStatus = "PENDING";
@@ -140,41 +164,33 @@
 
     }
 
-    private void HandleFileChange(InputFileChangeEventArgs e)
+    private async Task HandleFileChange(InputFileChangeEventArgs e)
     {
-        file = e.File;
+        // var stream = file.OpenReadStream();
+        using (var stream = e.File.OpenReadStream(8000000))
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                await stream.CopyToAsync(memoryStream);
+                imageBytes = memoryStream.ToArray();
+            }
+        }
     }
 
     private async Task SaveFileToDatabase(CommissionRequest cr, PostgresContext context)
     {
-        if (file == null) { confirmationMessage = "no file selected"; return; }
-
         try
         {
-            // var stream = file.OpenReadStream();
-            using (var stream = file.OpenReadStream(8000000))
-            {
-                using (var memoryStream = new MemoryStream())
+            ReferenceImage art = new ReferenceImage()
                 {
-                    await stream.CopyToAsync(memoryStream);
-
-                    ReferenceImage art = new ReferenceImage()
-                        {
-                            Image = memoryStream.ToArray(),
-                            CommissionRequestId = cr.Id
-                        };
-
-                    // Save to the database using DbContext
-                    await context.ReferenceImages.AddAsync(art);
-                    await context.SaveChangesAsync();
-                }
-            }
-            confirmationMessage = "Image uploaded successfully";
-            file = null;
+                    Image = imageBytes,
+                    CommissionRequestId = cr.Id
+                };
+            imageBytes = null;
         }
         catch
         {
-            confirmationMessage = "Image failed to upload";
+
         }
     }
 }

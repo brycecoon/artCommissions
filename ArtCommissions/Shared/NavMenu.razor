@@ -34,12 +34,12 @@
                 <AuthorizeView>
                     <Authorized>
                         <form method="post" action="Identity/Account/Logout">
-                            <button type="submit" class="nav-link btn btn-link">Log out</button>
+                            <button type="submit" class="nav-link btn btn-primary">Log out</button>
                         </form>
                     </Authorized>
                     <NotAuthorized>
-                        <a class="nav-link" href="Identity/Account/Register">Register</a>
-                        <a class="nav-link" href="Identity/Account/Login">Log in</a>
+                        <button class="nav-link btn btn-success mx-1 my-1 my-xl-0" style="color: white" href="Identity/Account/Register">Register</button>
+                        <button class="nav-link btn btn-primary mx-1 my-1 my-xl-0" href="Identity/Account/Login">Log in</button>
                     </NotAuthorized>
                 </AuthorizeView>
             </div>
