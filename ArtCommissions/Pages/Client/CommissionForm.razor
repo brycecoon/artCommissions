@@ -19,21 +19,24 @@
         </div>
     </div>
 
-    <div class="container p-2 my-3 d-flex flex-column justify-content-center">
-        <label class="form-label mx-2" >What do you want me to draw? <small class="text-danger">* This field is required</small></label>
+    @if (commissionExamples is not null)
+    {
+        <div class="container p-2 my-3 d-flex flex-column justify-content-center">
+            <label class="form-label mx-2" >What do you want me to draw? <small class="text-danger">* This field is required</small></label>
 
-        <div class="form-group p-2 mx-3">
-            @foreach(var cr in commissionExamples)
-            {
-            <div class="form-check">
-                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" @onchange="() => selectedType = cr.CommissionType">
-                <label class="form-check-label" for="flexRadioDefault1">
-                    @cr.CommissionType
-                </label>
+            <div class="form-group p-2 mx-3">
+                @foreach (var cr in commissionExamples)
+                {
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" @onchange="() => selectedType = cr.CommissionType">
+                        <label class="form-check-label" for="flexRadioDefault1">
+                            @cr.CommissionType
+                        </label>
+                    </div>
+                }
             </div>
-            }
         </div>
-    </div>
+    }
 
     <div class="container p-2 my-3 d-flex flex-column justify-content-center">
         <label class="form-label mx-2">Please describe what you are thinking! Background (colored or grayscale, painted style?), Perspective ("from the sky, from below"), Pose ("slouched over, heroic...") or anything else you want me to include.</label>
@@ -69,7 +72,7 @@
         </div>
 
         <div class="mx-3">
-            <button class="btn btn-primary" @onclick="async () => {await SaveFileToDatabase(CreateNewRequest()); }">Submit</button>
+            <button class="btn btn-primary" @onclick="async () => {await CreateNewRequest(); }">Submit</button>
         </div>
     </div>
 </div>
@@ -87,8 +90,8 @@
     private byte[]? uploadImagesBytes { get; set; } = null;
     private IBrowserFile? file = null;
     private string? confirmationMessage = null;
-    private List<CommissionExample> commissionExamples;
-    private List<CommissionRequest> commissionRequests;
+    private List<CommissionExample>? commissionExamples { get; set; }
+    private List<CommissionRequest>? commissionRequests;
 
     private string Name;
     private string Email;
@@ -109,25 +112,32 @@
             imageBytes = art.Image;
         }
 
-        var commissionRequests = await context.CommissionRequests
+        commissionRequests = await context.CommissionRequests
             .ToListAsync();
 
-        var commissionExamples = await context.CommissionExamples
+        commissionExamples = await context.CommissionExamples
             .ToListAsync();
 
     }
 
 
-    private CommissionRequest CreateNewRequest()
+    private async Task CreateNewRequest()
     {
-        var request = new CommissionRequest();
-        request.Firstname = Name;
-        request.Email = Email;
-        request.Details = commissionDetails;
-        request.AcceptedStatus = "PENDING";
-        request.ArtistId = 1;                 /////////////////////////////////HARD CODED VALUE///////////////////////////
-        request.CommissionType = selectedType;
-        return request;
+        using (var context = contextFactory.CreateDbContext())
+        {
+            var request = new CommissionRequest();
+            request.Firstname = Name;
+            request.Email = Email;
+            request.Details = commissionDetails;
+            request.AcceptedStatus = "PENDING";
+            request.ArtistId = 1;                 /////////////////////////////////HARD CODED VALUE///////////////////////////
+            request.CommissionType = selectedType;
+            await context.CommissionRequests.AddAsync(request);
+
+            await context.SaveChangesAsync();
+            await SaveFileToDatabase(request, context);
+        }
+
     }
 
     private void HandleFileChange(InputFileChangeEventArgs e)
@@ -135,13 +145,12 @@
         file = e.File;
     }
 
-    private async Task SaveFileToDatabase(CommissionRequest cr)
+    private async Task SaveFileToDatabase(CommissionRequest cr, PostgresContext context)
     {
         if (file == null) { confirmationMessage = "no file selected"; return; }
 
         try
         {
-            var context = contextFactory.CreateDbContext();
             // var stream = file.OpenReadStream();
             using (var stream = file.OpenReadStream(8000000))
             {

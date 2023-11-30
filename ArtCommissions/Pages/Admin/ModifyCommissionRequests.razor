@@ -8,17 +8,19 @@
 <h3>Modify Commission Requests</h3>
 
 <table class="table table-striped">
-	<tr>
+	<thead>
+		<tr>
 		<th scope="col">Name</th>
 		<th scope="col">Commission Type</th>
 		<th scope="col">Description</th>
 		<th scope="col">Email</th>
 		<th scope="col">Cost</th>
-		<th scope="col">Amount Paid</th>
-	</tr>
+        <th scope="col">Amount Paid</th>
+        </tr>
+	</thead>
 	<tbody>
-		
-		@foreach (var cr in Commissions)
+	@if(commissions is not null && commissions.Count > 0)	
+		@foreach (var cr in commissions)
 		{
 			if(cr.AcceptedStatus == "ACCEPTED" || cr.AcceptedStatus == "PENDING")
 			{
@@ -39,7 +41,7 @@
 							@onclick="async () => {
 									await Accept(cr.Id);
 								}" 
-							class="btn btn-primary" aria-disabled="false";>
+							class="btn btn-primary" aria-disabled="false">
 								Accept
 						</button>
 					</td>
@@ -47,9 +49,9 @@
 						<button 
 							@onclick="() => {
 									Deny(cr); 
-									Commissions.Remove(cr); 
+									commissions.Remove(cr); 
 								}"
-							class="btn btn-danger" aria-disabled="false";>
+							class="btn btn-danger" aria-disabled="false">
 								Deny
 						</button> @*delete sets to null*@
 					</td>
@@ -61,12 +63,15 @@
 </table>
 
 @code {
-	public List<CommissionRequest> Commissions = new();
+	private List<CommissionRequest>? commissions { get; set; }
+
 	protected override async Task OnInitializedAsync()
 	{
 		var context = contextFactory.CreateDbContext();
 
-		Commissions = await context.CommissionRequests.Where(i => i.ArtistId == 1).ToListAsync();
+		commissions = await context.CommissionRequests
+		.Where(i => i.ArtistId == 1)
+		.ToListAsync();
 	}
 
 	public async Task Accept(int id)
