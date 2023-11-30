@@ -32,6 +32,15 @@
                 <label for="inCarousel">Yes</label>
                 <input type="radio" @onchange="() => isInCarousel = false" name="carousel">
                 <label for="notInCarousel">No</label>
+                
+                @if(row.IsInCarousel.HasValue && row.IsInCarousel.Value)
+                {
+                    <p>Item Currently in Carousel: Yes</p>
+                }
+                else
+                {
+                    <p>Item Currently in Carousel: No</p>
+                }
 
 
                 <button @onclick="() => EditTag(row)">Save New Type</button>
