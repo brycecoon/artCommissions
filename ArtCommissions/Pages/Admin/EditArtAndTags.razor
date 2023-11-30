@@ -27,12 +27,6 @@
                     <option>No Type</option>
                 </select>
 
-                <p>Show this image in the Carousel?</p>
-                <input type="radio" @onchange="() => isInCarousel = true" name="carousel">
-                <label for="inCarousel">Yes</label>
-                <input type="radio" @onchange="() => isInCarousel = false" name="carousel">
-                <label for="notInCarousel">No</label>
-                
                 @if(row.IsInCarousel.HasValue && row.IsInCarousel.Value)
                 {
                     <p>Item Currently in Carousel: Yes</p>
@@ -41,6 +35,13 @@
                 {
                     <p>Item Currently in Carousel: No</p>
                 }
+
+                <p>Show this image in the Carousel?</p>
+                <input type="radio" @onchange="() => isInCarousel = true" name="carousel">
+                <label for="inCarousel">Yes</label>
+                <input type="radio" @onchange="() => isInCarousel = false" name="carousel">
+                <label for="notInCarousel">No</label>
+                
 
 
                 <button @onclick="() => EditTag(row)">Save New Type</button>
