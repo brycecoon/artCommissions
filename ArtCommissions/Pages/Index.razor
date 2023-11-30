@@ -10,27 +10,26 @@
 
     <div class="container w-100 border border">
         <div class="row">
-            <h1 class="text-center"> @Name</h1>
+            <h1 class="text-center">@artist.Firstname @artist.Lastname</h1>
         </div>
         <div class="row flex-md-grow-1">
             <div class="col-md-1 flex-column">
                 <div>
-                    <img class="d-block w-100 rounded-circle" src="data:image/jpeg;base64,@Convert.ToBase64String(imageBytes[0])">
+                    <img class="d-block w-100 rounded-circle" src="data:image/jpeg;base64,@Convert.ToBase64String(@artist.Profilepic)">
                 </div>
             </div>
-            @* <img class="d-block w-100" src="data:image/jpeg;base64,@Convert.ToBase64String(imageBytes[0])"> *@
 
         </div>
         <div class="row">
             <div class="border border-success">
-                <p> about me: @About</p>
+                <p> about me: @artist.Aboutme</p>
             </div>
         </div>
         <div class="row">
             <div class="border border-danger">
-                @if (Socials is not null)
+                @if (socials is not null)
                 {
-                    @foreach (Social row in Socials)
+                    @foreach (var row in socials)
                     {
                         <p>@row.Site : <a href="@row.Link">@row.Link</a></p>
                     }
@@ -52,35 +51,34 @@ else
 @code {
     //TODO: still need to make artist profile table in our database (profile picture)
     [Parameter]
-    public int ArtistID { get; set; } = 1;
     public string? Name { get; set; }
     public string? About { get; set; }
     public IEnumerable<Social>? Socials { get; set; } = null;
     private List<byte[]> imageBytes { get; set; } = new();
     private byte[]? pfp { get; set; }
     const string carouselName = "carouselExampleIndicators"; // NOTE: the ID of the carousel
+    private Artist artist { get; set; }
+    private List<Social> socials { get; set; }
 
 
     protected override async Task OnInitializedAsync()
     {
         using var context = contextFactory.CreateDbContext();
 
-        var artist = await context.Artists
-            .FirstOrDefaultAsync(i => i.Id == ArtistID);
+        artist = await context.Artists
+            .FirstOrDefaultAsync(i => i.Id == 1);
 
         var exampleImages = await context.ExampleImages
             .Where(i => i.IsInCarousel == true)
+            .ToListAsync();
+
+        socials = await context.Socials
+            .Where(i => i.ArtistId == 1)
             .ToListAsync();
 
         foreach (ExampleImage e in exampleImages)
         {
             imageBytes.Add(e.Image);
         }
-
-
-        Name = $"{artist.Firstname} {artist.Lastname}";
-        About = artist.Aboutme;
-        Socials = artist.Socials;
-        pfp = artist.Profilepic;
     }
 }
