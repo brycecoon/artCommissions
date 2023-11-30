@@ -1,64 +1,48 @@
-﻿<div class="navbar navbar-expand-lg navbar-dark bg-dark container-fluid">
-    <nav class="navbar-collapse align-items-stretch pt-lg-1">
-        <div class="nav-item px-3 d-flex align-items-center">
-            <NavLink class="nav-link" href="/">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
+﻿<nav class="navbar navbar-expand-xl navbar-light p-4">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">My Page :)</a>
 
-        @* Admin Pages *@
-        <div class="nav-item px-3 d-flex align-items-center">
-            <NavLink class="nav-link" href="/admin/profile">
-                <span class="oi oi-brush" aria-hidden="true"></span> Profile
-            </NavLink>
-        </div>
-        <div class="nav-item px-3 d-flex align-items-center">
-            <NavLink class="nav-link" href="/admin/clients">
-                <span class="oi oi-list" aria-hidden="true"></span> Clients
-            </NavLink>
-        </div>
-        <div class="nav-item px-3 d-flex align-items-center">
-            <NavLink class="nav-link" href="/admin/edit_art">
-                <span class="oi oi-eyedropper" aria-hidden="true"></span> Edit Art
-            </NavLink>
-        </div>
-        <div class="nav-item px-3 d-flex align-items-center">
-            @* Should these be contained in the same page?  *@
-            <NavLink class="nav-link" href="/admin/upload">
-                <span class="oi oi-image" aria-hidden="true"></span> Upload Art
-            </NavLink>
-        </div>
-        <div class="nav-item px-3 d-flex align-items-center">
-            <NavLink class="nav-link" href="/admin/commissions">
-                <span class="oi oi-pencil" aria-hidden="true"></span> View Commissions
-            </NavLink>
-        </div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-        @* Client Pages *@
-        <div class="nav-item px-3 d-flex align-items-center">
-            <NavLink class="nav-link" href="/prices">
-                <span class="oi oi-copywriting" aria-hidden="true"></span> Examples and Prices
-            </NavLink>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                @* Client Pages *@
+                <div class="d-flex flex-column flex-xl-row">
+                    <a class="nav-link active" href="/">Home</a>
+                    <a class="nav-link" href="/prices">View Examples</a>
+                    <a class="nav-link" href="/create_request">Create Request</a>
+                </div>
+
+                @* Admin Pages *@
+                <AuthorizeView>
+                    <Authorized>
+                        <div class="d-flex flex-column flex-xl-row">
+                            <a class="nav-link" href="/admin/clients">Clients</a>
+                            <a class="nav-link" href="/admin/edit_art">Edit Art</a>
+                            <a class="nav-link" href="/admin/upload">Upload Art</a>
+                            <a class="nav-link" href="/admin/commissions">View Requests</a>
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
+            </div>
+
+            @* Login / Logout *@
+            <div class="d-flex flex-column flex-xl-row">
+                <AuthorizeView>
+                    <Authorized>
+                        <form method="post" action="Identity/Account/Logout">
+                            <button type="submit" class="nav-link btn btn-link">Log out</button>
+                        </form>
+                    </Authorized>
+                    <NotAuthorized>
+                        <a class="nav-link" href="Identity/Account/Register">Register</a>
+                        <a class="nav-link" href="Identity/Account/Login">Log in</a>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>
         </div>
-        <div class="nav-item px-3 d-flex align-items-center">
-            <NavLink class="nav-link" href="/create_request">
-                <span class="oi oi-cart" aria-hidden="true"></span> Submit Request
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3 d-flex align-items-center">
-            <LoginDisplay/>
-        </div>
-    </nav>
-</div>
-
-@code {
-    private bool collapseNavMenu = true;
-
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-}
+    </div>
+</nav>
