@@ -16,6 +16,7 @@
 		<th scope="col">Email</th>
 		<th scope="col">Cost</th>
         <th scope="col">Amount Paid</th>
+		<th scope="col">Accepted Status</th>
         </tr>
 	</thead>
 	<tbody>
@@ -31,8 +32,9 @@
 				<td>@cr.CommissionType</td>
 				<td>@cr.Details</td>
 				<td>@cr.Email</td>
-				<td>@cr.CommissionCost</td>
-				<td>@cr.AmmountAlreadyPaid</td>
+				<td>$@cr.CommissionCost</td>
+				<td>$@cr.AmmountAlreadyPaid</td>
+				<td>@cr.AcceptedStatus</td>
 
 				@if (cr.AcceptedStatus == "PENDING")
 					{
@@ -56,14 +58,22 @@
 						</button> @*delete sets to null*@
 					</td>
 				}
-			</tr>
-			}
+					</tr>
+				}
+				@foreach(var row in referenceImages)
+				@if (cr.Id == row.CommissionRequestId && cr.AcceptedStatus is not null)
+				{
+					<p>ReferenceImage</p>
+					<img src="data:image/jpeg;base64,@Convert.ToBase64String(row.Image)" alt="Los Angeles" class="d-block w-100" style="max-width: 50px">
+				}
+
 		}
 	</tbody>
 </table>
 
 @code {
 	private List<CommissionRequest>? commissions { get; set; }
+	private List<ReferenceImage>? referenceImages { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -72,9 +82,12 @@
 		commissions = await context.CommissionRequests
 		.Where(i => i.ArtistId == 1)
 		.ToListAsync();
+
+		referenceImages = await context.ReferenceImages
+		.ToListAsync();
 	}
 
-	public async Task Accept(int id)
+	public async Task<ResultType> Accept(int id)
 	{
 		var context = contextFactory.CreateDbContext();
 
@@ -85,8 +98,9 @@
 		if (crtoupdate != null)
 		{
 			crtoupdate.AcceptedStatus = "ACCEPTED";
+			await context.SaveChangesAsync();
 		}
-		await context.SaveChangesAsync();
+
 	}
 
 	public async Task Deny(CommissionRequest cr)
