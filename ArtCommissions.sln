@@ -5,7 +5,7 @@ VisualStudioVersion = 17.7.34018.315
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArtCommissions", "ArtCommissions\ArtCommissions.csproj", "{C8534B80-5473-47D9-B939-D85E0A0456CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtAPI", "ArtAPI\ArtAPI.csproj", "{A6EE0D8C-98D2-4155-AFDD-7F4BEAB43DC2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArtAPI", "ArtAPI\ArtAPI.csproj", "{A6EE0D8C-98D2-4155-AFDD-7F4BEAB43DC2}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C8534B80-5473-47D9-B939-D85E0A0456CF} = {C8534B80-5473-47D9-B939-D85E0A0456CF}
 	EndProjectSection
