@@ -1,30 +1,43 @@
-﻿<nav class="navbar navbar-expand-lg navbar-light p-4" style="background-color: #ccd5ae;">
+﻿<nav class="navbar navbar-expand-xl navbar-light p-4">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">My Page :)</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-                <a class="nav-link active" href="/">Home</a>
 
-                <a class="nav-link" href="/prices">View Examples</a>
-                <a class="nav-link" href="/create_request">Create Request</a>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav me-auto mb-2 mb-lg-0">
 
+                @* Client Pages *@
+                <div class="d-flex flex-column flex-xl-row">
+                    <a class="nav-link active" href="/">Home</a>
+                    <a class="nav-link" href="/prices">View Examples</a>
+                    <a class="nav-link" href="/create_request">Create Request</a>
+                </div>
+
+                @* Admin Pages *@
                 <AuthorizeView>
                     <Authorized>
-                        <a class="nav-link" href="/admin/clients">Clients</a>
-                        <a class="nav-link" href="/admin/edit_art">Edit Art</a>
-                        <a class="nav-link" href="/admin/upload">Upload Art</a>
-                        <a class="nav-link" href="/admin/commissions">View Requests</a>
+                        <div class="d-flex flex-column flex-xl-row">
+                            <a class="nav-link" href="/admin/clients">Clients</a>
+                            <a class="nav-link" href="/admin/edit_art">Edit Art</a>
+                            <a class="nav-link" href="/admin/upload">Upload Art</a>
+                            <a class="nav-link" href="/admin/commissions">View Requests</a>
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
+            </div>
 
+            @* Login / Logout *@
+            <div class="d-flex flex-column flex-xl-row">
+                <AuthorizeView>
+                    <Authorized>
                         <form method="post" action="Identity/Account/Logout">
                             <button type="submit" class="nav-link btn btn-link">Log out</button>
                         </form>
                     </Authorized>
                     <NotAuthorized>
-
-
                         <a class="nav-link" href="Identity/Account/Register">Register</a>
                         <a class="nav-link" href="Identity/Account/Login">Log in</a>
                     </NotAuthorized>
@@ -33,15 +46,3 @@
         </div>
     </div>
 </nav>
-
-
-@code {
-    private bool collapseNavMenu = true;
-
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-}
