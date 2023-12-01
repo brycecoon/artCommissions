@@ -1,6 +1,9 @@
 ﻿@page "/admin/clients"
+@attribute [Authorize(Roles = "admins")]
+
 @using ArtCommissions.Data;
 @using Microsoft.EntityFrameworkCore;
+
 @inject IDbContextFactory<PostgresContext> contextFactory
 
 <h3>ClientList</h3>
