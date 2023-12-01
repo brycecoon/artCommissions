@@ -5,16 +5,26 @@
 
 <h3>ClientList</h3>
 <p>this works</p>
-<tbody>
-    @foreach (var row in Commissions)
-    {
+<table class="table table-striped">
+    <thead>
         <tr>
-            <td>This is the Client: @row.Firstname</td>
-            <td>This is the discription: @row.Details</td>
-            <td>This is the type: @row.CommissionType</td>
+            <th scope="col">Name</th>
+            <th scope="col">Details</th>
+            <th scope="col">Commission Type</th>
         </tr>
-    }
-</tbody>
+    </thead>
+    <tbody>
+        @foreach (var row in Commissions)
+        {
+            <tr>
+                <td>@row.Firstname @row.Lastname</td>
+                <td>@row.Details</td>
+                <td>@row.CommissionType</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
 @code {
     private IEnumerable<CommissionRequest>? Commissions;
 
