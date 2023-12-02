@@ -60,30 +60,17 @@
         }
 </div>
 
-<style>
-    /* Add this to your stylesheet or in a tag in the Blazor component */
-    .custom-background1 {
-        background-color: #2FE4FD;
-    }
-
-    .custom-background {
-        background-color: #C6F8FF
-    }
-
-
-</style>
-
 @code {
     //TODO: Cycle through the art, click on one, and then be able to edit the tags
     public int ArtistID { get; set; } = 1;
-    private List<ExampleImage>? exampleImages { get; set; }
-    private List<int[]> imageBytes { get; set; } = new();
-    private byte[]? pfp { get; set; }
-    private List<CommissionExample>? commissions;
-    private List<int> imageid { get; set; } = new();
     private string selectedCommission;
-    private Dictionary<int, string> selectedCommissions { get; set; } = new Dictionary<int, string>();
     private bool isInCarousel;
+    private byte[]? pfp { get; set; }
+    private List<int[]> imageBytes { get; set; } = new();
+    private List<int> imageid { get; set; } = new();
+    private List<ExampleImage>? exampleImages { get; set; }
+    private List<CommissionExample>? commissions;
+    private Dictionary<int, string> selectedCommissions { get; set; } = new Dictionary<int, string>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -96,7 +83,7 @@
         exampleImages = await context.ExampleImages
             .ToListAsync();
 
-       foreach (var image in exampleImages)
+        foreach (var image in exampleImages)
         {
             selectedCommissions[image.Id] = commissions.FirstOrDefault(c => c.Id == image.Id)?.CommissionType ?? "No Type";
         }
@@ -119,8 +106,6 @@
             {
                 // Mark the entity for deletion
                 context.ExampleImages.Remove(request);
-
-                // Save changes to the database
                 await context.SaveChangesAsync();
             }
         }
@@ -128,10 +113,7 @@
 
     public async Task EditTag(ExampleImage cr)
     {
-        if (cr is null)
-        {
-            throw new ArgumentNullException(nameof(cr));
-        }
+        if (cr is null) { throw new ArgumentNullException(nameof(cr)); }
 
         using (var context = contextFactory.CreateDbContext())
         {
@@ -139,32 +121,24 @@
                 .Where(c => c.Id == cr.Id)
                 .FirstOrDefaultAsync();
 
-
             if (request != null)
             {
                 var selectedCommission = selectedCommissions[cr.Id];
 
                 var newType = await context.CommissionExamples
-                .Where(c => c.CommissionType == selectedCommission)
-                .FirstOrDefaultAsync();
+                    .Where(c => c.CommissionType == selectedCommission)
+                    .FirstOrDefaultAsync();
 
-                if (newType != null || selectedCommission == "No Type")
+                if (selectedCommission == "No Type")
                 {
-                    if (selectedCommission == "No Type")
-                    { request.CommissionExampleId = null; }
-                    else
-                    // Edit what you need to
-                    {
-                        request.CommissionExampleId = newType.Id;
-                    }
-
-                    // Save changes to the database
+                    request.CommissionExampleId = null;
+                }
+                else if (newType != null)
+                {
+                    request.CommissionExampleId = newType.Id;
                 }
 
-                if (isInCarousel)
-                    request.IsInCarousel = true;
-                else
-                    request.IsInCarousel = false;
+                request.IsInCarousel = isInCarousel;
 
                 await context.SaveChangesAsync();
             }
