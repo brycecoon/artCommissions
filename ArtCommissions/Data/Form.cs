@@ -5,7 +5,7 @@ namespace ArtCommissions.Data;
 
 public class Form
 {
-    PostgresContext context;
+    PostgresContext? context = null;
 
     public byte[]? imageBytes { get; private set; } = null;
     public List<CommissionExample> commissionExamples { get; private set; }
@@ -32,6 +32,11 @@ public class Form
         SelectedType = null;
         Email = "";
         CommissionDetails = "";
+    }
+
+    public Form()
+    {
+        
     }
 
     public async Task CreateNewRequest()
@@ -71,8 +76,6 @@ public class Form
         request.ArtistId = 1;                 /////////////////////////////////HARD CODED VALUE///////////////////////////
         request.CommissionType = SelectedType;
 
-        await context.CommissionRequests.AddAsync(request);
-        await context.SaveChangesAsync();
         await SaveFileToDatabase(request);
     }
 
@@ -115,11 +118,13 @@ public class Form
         }
     }
 
-    public async Task SaveFileToDatabase(CommissionRequest request)
+    public virtual async Task SaveFileToDatabase(CommissionRequest request)
     {
         try
         {
-            if(imageBytes != null)
+            await context.CommissionRequests.AddAsync(request);
+
+            if (imageBytes != null)
             {
                 ReferenceImage art = new ReferenceImage()
                 {
@@ -135,7 +140,7 @@ public class Form
         }
         catch
         {
-            ////// Todo: fimx me
+            ////// Todo: fimx me help please :(((((( i so sad and don't wanna work
         }
     }
 }
