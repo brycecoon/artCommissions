@@ -13,6 +13,7 @@ public class Form
 
     public bool NameIsSelected { get; private set; } = true;
     public bool TypeIsSelected { get; private set; } = true;
+    public bool ValidEmail { get; private set; } = true;
 
     public string? Name { get; set; } = null;
     public string? SelectedType { get; set; } = null;
@@ -40,16 +41,24 @@ public class Form
             NameIsSelected = false;
             return;
         }
-        else
+        else NameIsSelected = true;
+        
+
+        if (!EmailVerification())
         {
-            NameIsSelected = true;
+            ValidEmail = false;
+            return;
         }
+        else ValidEmail = true;
+        
 
         if (SelectedType is null)
         {
             TypeIsSelected = false;
             return;
         }
+        else TypeIsSelected = true;
+
 
         var request = new CommissionRequest();
 
@@ -57,6 +66,7 @@ public class Form
         request.Firstname = n[0];
         request.Lastname = n.Count() == 1 ? "" : n[1];
         request.Email = Email;
+        request.AcceptedStatus = "PENDING";
         request.Details = CommissionDetails;
         request.ArtistId = 1;                 /////////////////////////////////HARD CODED VALUE///////////////////////////
         request.CommissionType = SelectedType;
@@ -83,17 +93,42 @@ public class Form
         commissionExamples = await context.CommissionExamples.ToListAsync();
     }
 
+    private bool EmailVerification()
+    {
+        if (Email is null || Email.IndexOf('@') < 0)
+        {
+            ValidEmail = false;
+            return false;
+        }
+        else
+        {
+            for(int i = Email.IndexOf('@'); i < Email.Length; i++)
+            {
+                ValidEmail = false;
+                if (Email[i] == '.')
+                {
+                    ValidEmail = true;
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
     public async Task SaveFileToDatabase(CommissionRequest request)
     {
         try
         {
-            ReferenceImage art = new ReferenceImage()
+            if(imageBytes != null)
             {
-                Image = imageBytes,
-                CommissionRequestId = request.Id
-            };
+                ReferenceImage art = new ReferenceImage()
+                {
+                    Image = imageBytes,
+                    CommissionRequestId = request.Id
+                };
 
-            context.Add(art);
+                context.Add(art);
+            }
             await context.SaveChangesAsync();
 
             imageBytes = null;

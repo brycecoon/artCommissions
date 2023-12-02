@@ -19,7 +19,7 @@ public partial class CommissionRequest
 
     public string? Details { get; set; }
 
-    public string? AcceptedStatus { get; set; } = "PENDING";
+    public string? AcceptedStatus { get; set; }
 
     public string? CompletionStatus { get; set; }
 

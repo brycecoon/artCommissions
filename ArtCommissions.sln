@@ -10,7 +10,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArtAPI", "ArtAPI\ArtAPI.csp
 		{C8534B80-5473-47D9-B939-D85E0A0456CF} = {C8534B80-5473-47D9-B939-D85E0A0456CF}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtCommissions.Tests", "ArtCommissions.Tests\ArtCommissions.Tests.csproj", "{2EE0B897-0655-44F5-8A58-5C46EFE44B8A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArtCommissions.Tests", "ArtCommissions.Tests\ArtCommissions.Tests.csproj", "{2EE0B897-0655-44F5-8A58-5C46EFE44B8A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
