@@ -4,6 +4,7 @@
 @using Microsoft.EntityFrameworkCore;
 
 @inject IDbContextFactory<PostgresContext> contextFactory
+@inject NavigationManager nav
 
 <h3>Modify Commission Requests</h3>
 
@@ -42,8 +43,9 @@
 						<button
 							@onclick="async () => {
 									await Accept(cr.Id);
-								}" 
-							class="btn btn-primary" aria-disabled="false">
+									
+								}"
+										class="btn btn-primary" aria-disabled="false">
 								Accept
 						</button>
 					</td>
@@ -100,7 +102,7 @@
 			crtoupdate.AcceptedStatus = "ACCEPTED";
 			await context.SaveChangesAsync();
 		}
-
+		nav.NavigateTo("/admin/commissions" , true);
 	}
 
 	public async Task Deny(CommissionRequest cr)
