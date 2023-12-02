@@ -44,9 +44,16 @@
         aboutme = artist.Aboutme;
         //socials = artist.Socials.;
         var response = await httpclient.GetAsync("https://localhost:7087/CommissionRequest/1");
-        int content = int.Parse(await response.Content.ReadAsStringAsync());
-
-        result = content;
+        var content = await response.Content.ReadAsStringAsync();
+        try
+        {
+            var resultCount = int.Parse(content);
+            result = resultCount;
+        }
+        catch
+        {
+            result = 0;
+        }
     }
 
     async Task refreshAsync()
