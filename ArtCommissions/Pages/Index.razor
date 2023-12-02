@@ -29,9 +29,27 @@
             <div class="border border-danger">
                 @if (socials is not null)
                 {
-                    @foreach (var row in socials)
+                    @foreach (var row in socials)  ///CSS TO MAKE THESE SMALLER
                     {
-                        <p>@row.Site : <a href="@row.Link">@row.Link</a></p>
+                        <a href="@row.Link">
+                            @switch (row.Site)
+                            {
+                                case "Facebook":
+                                    <img src="images/facebook.png" alt="Facebook" />
+                                    break;
+                                case "Twitter":
+                                    <img src="images/x.png" alt="X/Twitter" />
+                                    break;
+                                case "Instagram":
+                                    <img src="images/instagram.jpg" alt="Instagram" />
+                                    break;
+                                case "TikTok":
+                                    <img src="images/tiktok.png" alt="TikTok" />
+                                    break;
+                                default:
+                                    break;
+                            }
+                        </a>
                     }
                 }
                 else
