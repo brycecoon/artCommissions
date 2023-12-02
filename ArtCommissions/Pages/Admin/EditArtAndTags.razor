@@ -3,52 +3,62 @@
 @using Microsoft.EntityFrameworkCore;
 @inject IDbContextFactory<PostgresContext> contextFactory
 
-<h3>editArtAndTags</h3>
-@if (exampleImages is not null)
-    @foreach (var row in exampleImages)
-    {
+
+<h3>Edit The Art!</h3>
+<h4>Here you can put your art in a carousel, delete your art, or change the type</h4>
+<div class="row row-cols-1 row-cols-md-2 g-4">
+    @if (exampleImages is not null)
+        @foreach (var row in exampleImages)
         {
-            <div class="img-container">
-                <img src="data:image/jpeg;base64,@Convert.ToBase64String(row.Image)" alt="Los Angeles" class="d-block w-100">
-                @if (row.CommissionExampleId.HasValue && commissions != null)
-                {
-                    <p>Commission type: @commissions[row.CommissionExampleId.Value]?.CommissionType</p>
-                }
-                else
-                {
-                    <p>Commission type: N/A</p>
-                }
+            <div class="col">
+                <div class="card h-100">
+                    <div class="text-center">
+                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(row.Image)" alt="Los Angeles" class="card-img-top img-fluid" style="max-height: 200px; object-fit: contain;">
+                    </div>
+                    <div class="card-body">
+                        @if (row.CommissionExampleId.HasValue && commissions != null)
+                        {
+                            <p class="card-text">Commission type: @row.CommissionExample.CommissionType</p>
+                        }
+                        else
+                        {
+                            <p class="card-text">Commission type: N/A</p>
+                        }
 
-                <select value="@selectedCommissions[row.Id]" @onchange="e => HandleCommissionChange(row.Id, e.Value.ToString())">
-                    @foreach (var row2 in commissions)
-                    {
-                        <option value="@row2.CommissionType">@row2.CommissionType</option>
-                    }
-                    <option>No Type</option>
-                </select>
+                        <select class="form-select mb-2" value="@selectedCommissions[row.Id]" @onchange="e => HandleCommissionChange(row.Id, e.Value.ToString())">
+                            @foreach (var row2 in commissions)
+                            {
+                                <option value="@row2.CommissionType">@row2.CommissionType</option>
+                            }
+                            <option>No Type</option>
+                        </select>
 
-                @if(row.IsInCarousel.HasValue && row.IsInCarousel.Value)
-                {
-                    <p>Item Currently in Carousel: Yes</p>
-                }
-                else
-                {
-                    <p>Item Currently in Carousel: No</p>
-                }
+                        @if (row.IsInCarousel.HasValue && row.IsInCarousel.Value)
+                        {
+                            <p class="card-text">Item Currently in Carousel: Yes</p>
+                        }
+                        else
+                        {
+                            <p class="card-text">Item Currently in Carousel: No</p>
+                        }
 
-                <p>Show this image in the Carousel?</p>
-                <input type="radio" @onchange="() => isInCarousel = true" name="carousel">
-                <label for="inCarousel">Yes</label>
-                <input type="radio" @onchange="() => isInCarousel = false" name="carousel">
-                <label for="notInCarousel">No</label>
-                
+                        <p class="card-text">Show this image in the Carousel?</p>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" @onchange="() => isInCarousel = true" name="carousel">
+                            <label class="form-check-label" for="inCarousel">Yes</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" @onchange="() => isInCarousel = false" name="carousel">
+                            <label class="form-check-label" for="notInCarousel">No</label>
+                        </div>
 
-
-                <button @onclick="() => EditTag(row)">Save New Type</button>
-                <button @onclick="() => Deny(row)" class="btn btn-danger">Delete Image</button>
+                        <button @onclick="() => EditTag(row)" class="btn btn-primary">Save New Type</button>
+                        <button @onclick="() => Deny(row)" class="btn btn-danger">Delete Image</button>
+                    </div>
+                </div>
             </div>
         }
-    }
+</div>
 
 @code {
     //TODO: Cycle through the art, click on one, and then be able to edit the tags
@@ -73,9 +83,9 @@
         exampleImages = await context.ExampleImages
             .ToListAsync();
 
-        foreach (var image in exampleImages)
+       foreach (var image in exampleImages)
         {
-            selectedCommissions[image.Id] = commissions[image.CommissionExampleId.GetValueOrDefault()].CommissionType;
+            selectedCommissions[image.Id] = commissions.FirstOrDefault(c => c.Id == image.Id)?.CommissionType ?? "No Type";
         }
     }
 

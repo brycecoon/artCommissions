@@ -16,7 +16,7 @@ else
 {
     <img src="data:image/png;base64,@Convert.ToBase64String(uploadImagesBytes)" alt="Uploaded Image" />
 }
-
+<p>Head over to the edit images page to change their tags</p>
 
 <div class="my-3 d-flex">
     <InputFile OnChange="@HandleFileChange" />
@@ -34,10 +34,16 @@ else
     //get upload logic from the test component, make it look nice
     private byte[]? uploadImagesBytes = null;
     private string? confirmationMessage = null;
+    private List<CommissionExample> types{ get; set; }
 
 
     protected override async Task OnInitializedAsync()
     {
+        var context = contextFactory.CreateDbContext();
+
+        var types = await context.CommissionExamples
+        .Where(c => c.ArtistId == 1)
+        .ToListAsync();
     }
 
 
