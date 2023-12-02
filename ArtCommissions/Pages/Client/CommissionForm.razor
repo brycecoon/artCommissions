@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 @using Microsoft.EntityFrameworkCore;
 @inject IDbContextFactory<PostgresContext> contextFactory
+@inject NavigationManager navigationManager
 
 <div class="container p-3 w-xs-25 w-lg-25">
 
@@ -22,6 +23,10 @@
             <span class="flex-fill mx-3">
                 <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Enter email" @bind="form.Email">
                 <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                @if (!form.ValidEmail)
+                {
+                    <small class="text-danger">* Please input a valid email</small>
+                }
             </span>
         </div>
     </div>
@@ -41,7 +46,7 @@
                 @foreach (var cr in form.commissionExamples)
                 {
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" @onchange="() => form.SelectedType = cr.CommissionType">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" @onchange="() => {form.SelectedType = cr.CommissionType; price=cr.Price;}">
                         <label class="form-check-label" for="flexRadioDefault1">
                             @cr.CommissionType
                         </label>
@@ -73,7 +78,8 @@
     <div class="container p-2 d-flex align-items-center">
         <div class="form-group p-2 d-flex flex-row justify-content-around">
             <span class="flex-fill align-items-center">
-                <label class="form-label">Here's the cost: $100</label>
+                <label class="form-label">Here's the estimated cost: $@price</label>
+                <p>Please be aware that costs can change based on complexity</p>
             </span>
         </div>
 
@@ -85,7 +91,12 @@
         </div>
 
         <div class="mx-3">
-            <button class="btn btn-primary" @onclick="async () => await form.CreateNewRequest()">Submit</button>
+            <button class="btn btn-primary" @onclick="async () => { 
+                                                await form.CreateNewRequest();
+                                                Navigate();
+                                            }"> 
+                Submit
+            </button>
         </div>
     </div>
 </div>
@@ -93,6 +104,14 @@
 
 @code {
     Form form;
+    decimal? price;
+    public void Navigate()
+    {
+        if (form.NameIsSelected == true && form.TypeIsSelected == true && form.ValidEmail == true)
+    {
+            navigationManager.NavigateTo("/ConfirmSubmit");
+        }
+    }
     protected override async Task OnInitializedAsync()
     {
         var context = contextFactory.CreateDbContext();
