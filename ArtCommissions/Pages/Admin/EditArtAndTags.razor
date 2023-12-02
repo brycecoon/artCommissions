@@ -6,6 +6,44 @@
 
 <h3>Edit The Art!</h3>
 <h4>Here you can put your art in a carousel, delete your art, or change the type</h4>
+<h4>as well as change what types of commission you accept</h4>
+
+<button value="@editCommission" @onclick="() => editCommission = true">Edit commission types</button>
+@if (editCommission)
+{
+    <table>
+        <thead>Commission Type</thead>
+        <thead>Description</thead>
+        <thead>Price</thead>
+    </table>
+    //types that you can modify
+    @foreach (var row in commissions)
+    {
+        <tr>
+        <div class="card flex-row">
+            <input type="text" @bind="@updatedType" placeholder="@row.CommissionType">
+            <input type="text" @bind="@updatedDescription" placeholder="@row.Description">
+            <input type="text" @bind="@updatedPrice" placeholder="@row.Price">
+            <button class="btn-primary" @onclick="() => HandleEditType(row.Id)">Save Changes</button>
+        </div>
+        </tr>
+    }
+
+    //add a new type
+    <button value="@addCommission" @onclick="() => addCommission = true">Add a new commission type</button>
+    @if (addCommission)
+    {
+        <div class="card flex-row">
+            <input type="text" @bind="@updatedType" placeholder="Commission Type Name">
+            <input type="text" @bind="@updatedDescription" placeholder="Description of Commisson type">
+            <input type="text" @bind="@updatedPrice" placeholder="Starter Price $:">
+        <button class="btn-primary" @onclick="() => HandleAddType()">Save Changes</button>
+        </div>
+
+    }
+
+}
+
 <div class="row row-cols-1 row-cols-md-2 g-4">
     @if (exampleImages is not null)
         @foreach (var row in exampleImages)
@@ -70,7 +108,6 @@
         background-color: #C6F8FF
     }
 
-
 </style>
 
 @code {
@@ -84,6 +121,12 @@
     private string selectedCommission;
     private Dictionary<int, string> selectedCommissions { get; set; } = new Dictionary<int, string>();
     private bool isInCarousel;
+    private bool editCommission = false;
+    private string updatedType;
+    private string updatedDescription;
+    private decimal updatedPrice;
+    private bool addCommission;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -96,7 +139,7 @@
         exampleImages = await context.ExampleImages
             .ToListAsync();
 
-       foreach (var image in exampleImages)
+        foreach (var image in exampleImages)
         {
             selectedCommissions[image.Id] = commissions.FirstOrDefault(c => c.Id == image.Id)?.CommissionType ?? "No Type";
         }
@@ -168,6 +211,37 @@
 
                 await context.SaveChangesAsync();
             }
+        }
+    }
+
+    private async Task HandleEditType(int id)
+    {
+        using (var context = contextFactory.CreateDbContext())
+        {
+            var request = await context.CommissionExamples
+            .Where(c => c.Id == id)
+            .FirstOrDefaultAsync();
+
+            request.CommissionType = updatedType;
+            request.Description = updatedDescription;
+            request.Price = updatedPrice;
+
+            await context.SaveChangesAsync();
+        }
+    }
+
+    private async Task HandleAddType()
+    {
+        using (var context = contextFactory.CreateDbContext())
+        {
+            var addType = new CommissionExample();
+
+            addType.Price = updatedPrice;
+            addType.Description = updatedDescription;
+            addType.CommissionType = updatedType;
+
+            commissions.Add(addType);
+            await context.SaveChangesAsync();
         }
     }
 }
