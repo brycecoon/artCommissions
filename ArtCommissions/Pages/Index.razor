@@ -29,27 +29,31 @@
             <div class="border border-danger">
                 @if (socials is not null)
                 {
+                    <p>Link to socials: </p>
                     @foreach (var row in socials)  ///CSS TO MAKE THESE SMALLER
                     {
+                        <div class="card flex-row">
                         <a href="@row.Link">
                             @switch (row.Site)
                             {
                                 case "Facebook":
-                                    <img src="images/facebook.png" alt="Facebook" />
+                                    <img src="images/facebook.png" alt="Facebook" style="max-width: 50px"/>
                                     break;
                                 case "Twitter":
-                                    <img src="images/x.png" alt="X/Twitter" />
+                                        <img src="images/x.png" alt="X/Twitter" style="max-width: 50px" />
                                     break;
                                 case "Instagram":
-                                    <img src="images/instagram.jpg" alt="Instagram" />
+                                        <img src="images/instagram.jpg" alt="Instagram" style="max-width: 50px" />
                                     break;
                                 case "TikTok":
-                                    <img src="images/tiktok.png" alt="TikTok" />
+                                        <img src="images/tiktok.png" alt="TikTok" style="max-width: 50px" />
                                     break;
                                 default:
                                     break;
                             }
                         </a>
+                        <p>@row.Site: @row.Link</p>
+                        </div>
                     }
                 }
                 else
