@@ -10,8 +10,8 @@
     @if (exampleImages is not null)
         @foreach (var row in exampleImages)
         {
-            <div class="col">
-                <div class="card h-100">
+            <div class="col card custom-background1">
+                <div class="card h-100 custom-background">
                     <div class="text-center">
                         <img src="data:image/jpeg;base64,@Convert.ToBase64String(row.Image)" alt="Los Angeles" class="card-img-top img-fluid" style="max-height: 200px; object-fit: contain;">
                     </div>
@@ -59,6 +59,19 @@
             </div>
         }
 </div>
+
+<style>
+    /* Add this to your stylesheet or in a tag in the Blazor component */
+    .custom-background1 {
+        background-color: #2FE4FD;
+    }
+
+    .custom-background {
+        background-color: #C6F8FF
+    }
+
+
+</style>
 
 @code {
     //TODO: Cycle through the art, click on one, and then be able to edit the tags
