@@ -70,7 +70,7 @@ else
 	//public string? socials { get; set; }
 	public bool isEditing = false;
 
-	public async void Editing()
+	public void Editing()
 	{
 		if (isEditing)
 		{
@@ -85,13 +85,23 @@ else
 		}
 	}
 
-	public async void Cancel()
+	public  void Cancel()
 	{
 		Editing();
 	}
 
 	public async void Save()
 	{
+		var context = contextFactory.CreateDbContext();
+
+		var artist = await context.Artists.FirstOrDefaultAsync(i => i.Id == id);
+		if (tempfname is not null && templname is not null && tempaboutme is not null)
+		{
+			artist.Firstname = tempfname;
+			artist.Lastname = templname;
+			artist.Aboutme = tempaboutme;
+			await context.SaveChangesAsync();
+		}
 		fname = tempfname;
 		lname = templname;
 		aboutme = tempaboutme;
