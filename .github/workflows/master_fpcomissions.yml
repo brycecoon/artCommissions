@@ -9,6 +9,9 @@ on:
       - master
   workflow_dispatch:
 
+env: 
+  WORKING_DIRECTORY: ArtCommissions
+
 jobs:
   build:
     runs-on: ubuntu-latest
