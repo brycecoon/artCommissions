@@ -102,13 +102,18 @@
     //TODO: Cycle through the art, click on one, and then be able to edit the tags
     public int ArtistID { get; set; } = 1;
     private string selectedCommission;
-    private bool isInCarousel;
     private byte[]? pfp { get; set; }
     private List<int[]> imageBytes { get; set; } = new();
     private List<int> imageid { get; set; } = new();
     private List<ExampleImage>? exampleImages { get; set; }
     private List<CommissionExample>? commissions;
     private Dictionary<int, string> selectedCommissions { get; set; } = new Dictionary<int, string>();
+    private bool isInCarousel;
+    private bool editCommission = false;
+    private string updatedType;
+    private string updatedDescription;
+    private decimal updatedPrice;
+    private bool addCommission;
 
     protected override async Task OnInitializedAsync()
     {
