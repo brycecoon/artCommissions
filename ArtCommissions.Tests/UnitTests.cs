@@ -1,7 +1,5 @@
 ﻿using ArtCommissions.Data;
-using BootstrapBlazor.Components;
 using Bunit;
-using Bunit.TestDoubles;
 using FluentAssertions;
 using Moq;
 
@@ -28,6 +26,31 @@ public class AdminTests
 
         // Assert
         mockForm.VerifyAll();
+    }
+
+    [Fact]
+    public async Task FormClearsAfterSubmission()
+    {
+        // Arrange
+        var mockForm = new Mock<Form>(); // Assuming Form is not sealed and allows mocking
+
+        mockForm.Setup(f => f.SaveFileToDatabase(It.IsAny<CommissionRequest>())).Returns(Task.CompletedTask).Verifiable();
+
+        Form f = mockForm.Object;
+        f.Name = "mweep joe";
+        f.Email = "example@test.com";
+        f.CommissionDetails = "the deets";
+        f.SelectedType = "Icon";
+
+        // Act
+        await f.CreateNewRequest();
+
+        // Assert
+        mockForm.VerifyAll();
+        f.Name.Should().Be(null);
+        f.Email.Should().Be("");
+        f.CommissionDetails.Should().Be("");
+        f.SelectedType.Should().Be(null);
     }
 
     [Fact]

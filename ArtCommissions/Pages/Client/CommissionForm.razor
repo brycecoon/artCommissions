@@ -74,7 +74,7 @@
 
         <div class="form-group mx-3">
             <div class="mb-3">
-                <InputFile OnChange="@form.HandleFileChange" />
+                <InputFile OnChange="HandleFileChange" />
             </div>
         </div>
     </div>
@@ -98,7 +98,7 @@
             <button class="btn btn-floating btn-primary" @onclick="async () => { 
                                                 await form.CreateNewRequest();
                                                 Navigate();
-                                            }"> 
+                                            }">
                 Submit
             </button>
         </div>
@@ -110,10 +110,10 @@
     const int MAX_TEXT_COUNT = 500;
     Form form;
     decimal? price;
-    public void Navigate()
+    private void Navigate()
     {
         if (form.NameIsSelected == true && form.TypeIsSelected == true && form.ValidEmail == true)
-    {
+        {
             navigationManager.NavigateTo("/ConfirmSubmit");
         }
     }
@@ -121,5 +121,17 @@
     {
         var context = contextFactory.CreateDbContext();
         form = new(context);
+    }
+
+    private async Task HandleFileChange(InputFileChangeEventArgs e)
+    {
+        using (var stream = e.File.OpenReadStream(8000000))
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                await stream.CopyToAsync(memoryStream);
+                form.imageBytes = memoryStream.ToArray();
+            }
+        }
     }
 }

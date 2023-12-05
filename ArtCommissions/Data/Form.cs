@@ -7,7 +7,7 @@ public class Form
 {
     PostgresContext? context = null;
 
-    public byte[]? imageBytes { get; private set; } = null;
+    public byte[]? imageBytes { get; set; } = null;
     public List<CommissionExample> commissionExamples { get; private set; }
     public List<CommissionRequest>? commissionRequests;
 
@@ -34,10 +34,7 @@ public class Form
         CommissionDetails = "";
     }
 
-    public Form()
-    {
-        
-    }
+    public Form() { }
 
     public async Task CreateNewRequest()
     {
@@ -77,18 +74,15 @@ public class Form
         request.CommissionType = SelectedType;
 
         await SaveFileToDatabase(request);
+        ResetFields();
     }
 
-    public async Task HandleFileChange(InputFileChangeEventArgs e)
+    private void ResetFields()
     {
-        using (var stream = e.File.OpenReadStream(8000000))
-        {
-            using (var memoryStream = new MemoryStream())
-            {
-                await stream.CopyToAsync(memoryStream);
-                imageBytes = memoryStream.ToArray();
-            }
-        }
+        Name = null;
+        Email = "";
+        CommissionDetails = "";
+        SelectedType = null;
     }
 
     private async Task PopulateExampleTypes()
