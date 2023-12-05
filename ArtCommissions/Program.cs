@@ -2,6 +2,7 @@ using ArtCommissions.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,8 @@ builder.Services.AddDbContextFactory<PostgresContext>(config => config.UseNpgsql
 
 // DefaultUserService
 builder.Services.AddHostedService<DefaultUserService>();
+
+
 
 
 // Authentication / Authorization
