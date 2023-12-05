@@ -22,7 +22,7 @@
             </span>
             <span class="flex-fill mx-3">
                 <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Enter email" @bind="form.Email">
-                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                <small id="emailHelp" class="d-none d-lg-flex form-text text-muted">We'll never share your email with anyone else.</small>
                 @if (!form.ValidEmail)
                 {
                     <small class="text-danger">* Please input a valid email</small>
@@ -60,8 +60,12 @@
         <label class="form-label mx-2">Please describe what you are thinking! Background (colored or grayscale, painted style?), Perspective ("from the sky, from below"), Pose ("slouched over, heroic...") or anything else you want me to include.</label>
 
         <div class="form-group mx-3">
-            <textarea class="form-control h-25" id="exampleFormControlTextarea1" rows="3" @bind="form.CommissionDetails">Type here...</textarea>
-            <small class="form-text text-muted">If you don't have anything in mind, just leave this empty</small>
+            
+            <textarea class="form-control h-25" id="exampleFormControlTextarea1" rows="3" @bind:event="oninput" @bind="form.CommissionDetails">Type here...</textarea>
+            <div class="px-2 d-flex justify-content-between">
+                <small class="d-none d-lg-flex xt-muted">If you don't have anything in mind, just leave this empty</small>
+                <small class="p-lg-2 d-flex justify-content-end">Chars left: @(MAX_TEXT_COUNT - form.CommissionDetails.Count())</small>
+            </div>
         </div>
     </div>
 
@@ -91,7 +95,7 @@
         </div>
 
         <div class="mx-3">
-            <button class="btn btn-primary" @onclick="async () => {
+            <button class="btn btn-floating btn-primary" @onclick="async () => { 
                                                 await form.CreateNewRequest();
                                                 Navigate();
                                             }">
@@ -103,6 +107,7 @@
 
 
 @code {
+    const int MAX_TEXT_COUNT = 500;
     Form form;
     decimal? price;
     private void Navigate()

@@ -1,0 +1,72 @@
+﻿@using ArtCommissions.Data;
+@inject IDbContextFactory<PostgresContext> contextFactory;
+
+<footer class="footer mt-auto py-4 d-flex justify-content-center layout darken">
+    @if (socials is not null)
+    {
+        @foreach (var row in socials)
+        {
+            <a href="@row.Link" class="text-muted mx-2">
+                @switch (row.Site)
+                {
+                    case "Facebook":
+                        <i class="bi-facebook" />
+                        break;
+                    case "Twitter":
+                        <i class="bi-twitter" />
+                        break;
+                    case "Instagram":
+                        <i class="bi-instagram" />
+                        break;
+                    case "TikTok":
+                        <i class="bi-tiktok" />
+                        break;
+                    case "Pinterest":
+                        <i class="bi-pinterest" />
+                        break;
+                    case "Reddit":
+                        <i class="bi-reddit" />
+                        break;
+                    case "Ko-fi":
+                        <i class="bi-cup-hot" />
+                        break;
+                    case "Telegram":
+                        <i class="bi-telegram" />
+                        break;
+                    case "Whatsapp":
+                        <i class="bi-whatsapp" />
+                        break;
+                    default:
+                        break;
+                }
+            </a>
+        }
+    }
+    else
+    {
+        <p>no socials found</p>
+    }
+</footer>
+
+@code {
+    public IEnumerable<Social>? Socials { get; set; } = null;
+
+    private Artist artist { get; set; }
+    private List<Social> socials { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = contextFactory.CreateDbContext();
+
+        artist = await context.Artists
+            .FirstOrDefaultAsync(i => i.Id == 1);
+
+        var exampleImages = await context.ExampleImages
+            .Where(i => i.IsInCarousel == true)
+            .ToListAsync();
+
+        socials = await context.Socials
+            .Where(i => i.ArtistId == 1)
+            .ToListAsync();
+    }
+}

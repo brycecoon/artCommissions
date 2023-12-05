@@ -82,7 +82,7 @@
 		var context = contextFactory.CreateDbContext();
 
 		commissions = await context.CommissionRequests
-		.Where(i => i.ArtistId == 1)
+		.Where(i => i.ArtistId == 1)//PULL ALL THE NOT DENIED ONES TO FIX THE LIGHT LIGHT DARK DARK ISSUE
 		.ToListAsync();
 
 		referenceImages = await context.ReferenceImages

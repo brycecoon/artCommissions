@@ -8,28 +8,112 @@
 @inject NavigationManager navManager
 @inject HttpClient httpclient
 
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize(Roles = "admins")]
 
 
-<h3>ArtistProfile</h3>
 
-<p> currently viewing the profile of artist @fname @lname</p>
-<hr />
-<p> about me: @aboutme</p>
-<hr />
-<p> Total forms filled out : @result</p>
 
+<div class="container p-3 w-xs-25 w-lg-25">
+
+    @if (isEditing)
+    {
+        <div class="container p-2 my-3 d-flex flex-column justify-content-center">
+            <h3 class="container d-flex flex-row justify-content-center">Artist Profile and Stats</h3>
+            <div class="p-2 d-flex flex-column flex-sm-row justify-content-sm-around justify-content-center">
+                <span class="d-flex  mx-3 ">
+                    <input class="d-flex justify-content-center m-2" type="text" @bind="tempfname" />
+                </span>
+                <span class="d-flex  mx-3">
+                    <input class="d-flex justify-content-center m-2" type="text" @bind="templname" /> <br />
+                </span>
+
+            </div>
+
+            <div class="d-flex">
+                <textarea @bind="tempaboutme" @bind:event="oninput" maxlength="@MAX_TEXT_COUNT" rows="4" cols="150" />
+            </div>
+            <div class="px-2 d-flex justify-content-end">
+                <small class="p-lg-2 d-flex">Chars left: @(MAX_TEXT_COUNT - aboutme.Count())</small>
+            </div>
+            <div class="d-flex flex-row justify-content-center">
+                <button class="m-3 p-2 btn btn-primary btn-floating" @onclick="()=>{Save();}">Save</button>
+                <button class="m-3 p-2 btn btn-danger btn-floating" @onclick="()=>{Cancel();}"> Cancel</button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="container p-3 w-xs-25 w-lg-25">
+            <h3 class="d-flex flex-row justify-content-center">Artist Profile</h3>
+            <div>
+
+                <p> Profile of @fname @lname</p>
+            </div>
+            <hr />
+            <p> About me: @aboutme</p>
+            <hr />
+            <p> Total forms filled out : @result</p>
+            <div class="d-flex flex-row justify-content-center">
+                <button class="btn btn-primary btn-floating" @onclick="()=>{Editing();}">Edit</button>
+            </div>
+        </div>
+    }
+</div>
 
 @code {
-    //TODO: still need to make artist profile table in our database (profile picture)
+    //TODO: UPDATE PFP AND SOCIALS, PROBABLY ADD A SPOT IN THE DATABASE FOR THE SOCIALS WE ACCEPT SO THAT WE DON'T RUN INTO THE ISSUE OF SOMEONE TYPING THEM OUT WRONG
+           //CURRENT GOOD - FACEBOOK, TWITTER, INSTAGRAM, TIKTOK, PINTEREST, REDDIT, KO-FI, TELEGRAM, WHATSAPP
+    const int MAX_TEXT_COUNT = 500;
     [Parameter]
     public int id { get; set; } = 1;
     public string? fname { get; set; }
     public string? lname { get; set; }
     public string? aboutme { get; set; }
-    //public string? commissioncount { get; set;  }
+    private string? tempfname { get; set; }
+    private string? templname { get; set; }
+    public string? tempaboutme { get; set; }
     public int result { get; set; }
     //public string? socials { get; set; }
+    public bool isEditing = false;
 
+    public void Editing()
+    {
+        if (isEditing)
+        {
+            isEditing = false;
+        }
+        else
+        {
+            tempfname = fname;
+            templname = lname;
+            tempaboutme = aboutme;
+            isEditing = true;
+        }
+    }
+
+    public void Cancel()
+    {
+        Editing();
+    }
+
+    public async void Save()
+    {
+        var context = contextFactory.CreateDbContext();
+
+        var artist = await context.Artists.FirstOrDefaultAsync(i => i.Id == id);
+        if (tempfname is not null && templname is not null && tempaboutme is not null)
+        {
+            artist.Firstname = tempfname;
+            artist.Lastname = templname;
+            artist.Aboutme = tempaboutme;
+            await context.SaveChangesAsync();
+        }
+        fname = tempfname;
+        lname = templname;
+        aboutme = tempaboutme;
+        Editing();
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,7 +143,6 @@
     async Task refreshAsync()
     {
 
-        
+
     }
 }
-    
