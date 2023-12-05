@@ -18,7 +18,7 @@ public class DefaultUserService : BackgroundService
 
         foreach(var configItem in config.AsEnumerable())
         {
-            logger.LogInformation("config key:{key} = {value}", configItem.Key, configItem.Value);
+            logger.LogInformation("====CONFIG KEY: {key} = {value}", configItem.Key, configItem.Value);
         }
 
         var username = config[Constants.DefaultAdminUsername];
