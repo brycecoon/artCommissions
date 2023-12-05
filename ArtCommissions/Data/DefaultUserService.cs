@@ -14,6 +14,12 @@ public class DefaultUserService : BackgroundService
         var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        var logger = scope.ServiceProvider.GetRequiredService < ILogger<DefaultUserService>>();
+
+        foreach(var configItem in config.AsEnumerable())
+        {
+            logger.LogInformation("config key:{key} = {value}", configItem.Key, configItem.Value);
+        }
 
         var username = config[Constants.DefaultAdminUsername];
         var password = config[Constants.DefaultAdminPassword];
