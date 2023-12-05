@@ -11,10 +11,12 @@ namespace ArtAPI.Controllers
     {
         private readonly ILogger<CommissionRequestController> _logger;
         private ICommissionService _service;
-        public CommissionRequestController(ILogger<CommissionRequestController> logger, ICommissionService service)
+        private readonly IEmailSender emailSender;
+        public CommissionRequestController(ILogger<CommissionRequestController> logger, ICommissionService service, IEmailSender emailSender)
         {
             _logger = logger;
             _service = service;
+            this.emailSender = emailSender;
         }
 
         [HttpGet("{id}")]
@@ -26,6 +28,13 @@ namespace ArtAPI.Controllers
 
 
             return commissions;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Index(string email, string subject, string message)
+        {
+            await emailSender.SendEmailAsync(email, subject, message);
+            return Ok();
         }
     }
 }

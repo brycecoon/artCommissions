@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using System.Configuration;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,13 +22,14 @@ builder.Services.AddDbContextFactory<PostgresContext>(options =>
 });
 
 builder.Services.AddScoped<ICommissionService, CommissionRequestService>();
-
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddHttpClient();
 
 
 
 
 var app = builder.Build();
+var emailpassword = builder.Configuration["mailpassword"];
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
