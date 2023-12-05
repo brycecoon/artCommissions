@@ -51,10 +51,8 @@
 @code {
     public IEnumerable<Social>? Socials { get; set; } = null;
 
-    const string carouselName = "carouselExampleIndicators"; // NOTE: the ID of the carousel
     private Artist artist { get; set; }
     private List<Social> socials { get; set; }
-
 
     protected override async Task OnInitializedAsync()
     {

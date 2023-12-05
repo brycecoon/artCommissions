@@ -5,71 +5,6 @@
 @inject IDbContextFactory<PostgresContext> contextFactory
 @inject IJSRuntime JSRuntime
 
-@* @if (imageBytes.Count != 0)
-{
-
-    <div class="container w-100 border border">
-        <div class="row">
-            <h1 class="text-center">@artist.Firstname @artist.Lastname</h1>
-        </div>
-        <div class="row flex-md-grow-1">
-            <div class="col-md-1 flex-column">
-                <div>
-                    <img class="d-block w-100 rounded-circle" src="data:image/jpeg;base64,@Convert.ToBase64String(@artist.Profilepic)">
-                </div>
-            </div>
-
-        </div>
-        <div class="row">
-            <div class="border border-success">
-                <p> about me: @artist.Aboutme</p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="border border-danger">
-                @if (socials is not null)
-                {
-                    <p>Link to socials: </p>
-                    @foreach (var row in socials)  ///CSS TO MAKE THESE SMALLER
-                    {
-                        <div class="card flex-row">
-                            <a href="@row.Link">
-                                @switch (row.Site)
-                                {
-                                    case "Facebook":
-                                        <img src="images/facebook.png" alt="Facebook" style="max-width: 50px" />
-                                        break;
-                                    case "Twitter":
-                                        <img src="images/x.png" alt="X/Twitter" style="max-width: 50px" />
-                                        break;
-                                    case "Instagram":
-                                        <img src="images/instagram.jpg" alt="Instagram" style="max-width: 50px" />
-                                        break;
-                                    case "TikTok":
-                                        <img src="images/tiktok.png" alt="TikTok" style="max-width: 50px" />
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            </a>
-                            <p>@row.Site: @row.Link</p>
-                        </div>
-                    }
-                }
-                else
-                {
-                    <p>no socials found</p>
-                }
-            </div>
-
-        </div>
-    </div>
-}
-else
-{
-    <p>No image</p>
-} *@
-
 @if (imageBytes.Count != 0)
 {
     <div class="d-flex flex-column py-lg-5">
@@ -100,8 +35,8 @@ else
                 <img class="w-sm-50 w-lg-25 img img-fluid rounded-circle img-thumbnail" src="data:image/jpeg;base64,@Convert.ToBase64String(artist.Profilepic)">
             </div>
         </div>
-        <div class="d-flex justify-content-center align-items-center mt-3 order-lg-0 border-bottom border-dark">
-            <h1>@artist.Firstname @artist.Lastname</h1>
+        <div class="d-flex justify-content-center align-items-center mt-3 order-lg-0">
+            <h1 class="px-5 pb-2" style="border-bottom: 3px solid #D5DB9F;">@artist.Firstname @artist.Lastname</h1>
         </div>
     </div>
     
@@ -124,7 +59,7 @@ else
     private Artist artist { get; set; }
     private List<Social> socials { get; set; } = new();
 
-    const string carouselName = "carouselExampleIndicators"; // NOTE: the ID of the carousel
+    const string carouselName = "carouselExampleIndicators";
 
     protected override async Task OnInitializedAsync()
     {
@@ -150,6 +85,6 @@ else
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         object[] args = { carouselName };
-        await JSRuntime.InvokeVoidAsync("startCarousel", args); // NOTE: call JavaScript function with the ID of the carousel
+        await JSRuntime.InvokeVoidAsync("startCarousel", args);
     }
 }
