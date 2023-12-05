@@ -12,41 +12,39 @@
 <br>
 @if (editCommission)
 {
-    //<table class="table">
+    <table class="table">
         <thead>
-            <tr>
-        <thead>Commission Type</thead>
-        <thead>Description</thead>
-        <thead>Price</thead>
+           <tr>
+        <th>Commission Type</th>
+        <th>Description</th>
+        <th>Price</th>
         <th>Action</th>
         </tr>
         </thead>
-        <tbody></tbody>
-        //types that you can modify
-        @foreach (var row in commissions)
-        {
-            <tr>
-                <td><input type="text" @bind="@row.CommissionType" placeholder="@row.CommissionType"></td>
-                <td><input type="text" @bind="@row.Description" placeholder="@row.Description"></td>
-                <td> <input type="text" @bind="@row.Price" placeholder="@row.Price"></td>
-                <td><button class="btn-primary" @onclick="() => HandleEditType(row)">Save Changes</button></td>
-            </tr>
-        }
+        <tbody>
+            @foreach (var row in commissions)
+            {
+                <tr>
+                    <td><input type="text" @bind="@updatedType" placeholder="@row.CommissionType"></td>
+                    <td><input type="text" @bind="@updatedDescription" placeholder="@row.Description"></td>
+                    <td> <input type="text" @bind="@updatedPrice" placeholder="@row.Price"></td>
+                    <td><button class="btn-primary" @onclick="() => HandleEditType(row)">Save Changes</button></td>
+                </tr>
+            }
+            <tr><button class="p-md-1 m-4" @onclick="ToggleAddCommission">Add a new commission type</button></tr>
 
-@*         //add a new type
-        @if (addCommission)
-        {
-                <input type="text" @bind="@newCommission.CommissionType" placeholder="Commission Type Name">
-            <input type="text" @bind="@newCommission.Description" placeholder="Description of Commisson type">
-                <input type="text" @bind="@newCommission.Price" placeholder="Starter Price $:">
+            @if (addCommission)
+            {
+                <input type="text" @bind="@newCommissionType" placeholder="Commission Type Name">
+                <input type="text" @bind="@newCommissionDescription" placeholder="Description of Commisson type">
+                <input type="text" @bind="@newCommissionPrice" placeholder="Starter Price $:">
                 <button class="btn-primary" @onclick="() => HandleAddType()">Save Changes</button>
 
-        }
+            }
         </tbody>
     </table>
 
 
-    <button class="p-md-1 m-4" @onclick="ToggleAddCommission">Add a new commission type</button> *@
 
 }
 
@@ -103,23 +101,40 @@
             </div>
         }
 </div>
-  
+
+<style>
+    /* Add this to your stylesheet or in a tag in the Blazor component */
+    .custom-background1 {
+        background-color: #2FE4FD;
+    }
+
+    .custom-background {
+        background-color: #C6F8FF
+    }
+
+</style>
+
 @code {
     //TODO: Cycle through the art, click on one, and then be able to edit the tags
     public int ArtistID { get; set; } = 1;
-    private string selectedCommission;
-    private byte[]? pfp { get; set; }
-    private List<int[]> imageBytes { get; set; } = new();
-    private List<int> imageid { get; set; } = new();
     private List<ExampleImage>? exampleImages { get; set; }
+    private List<int[]> imageBytes { get; set; } = new();
+    private byte[]? pfp { get; set; }
     private List<CommissionExample>? commissions;
+    private List<int> imageid { get; set; } = new();
+    private string selectedCommission;
     private Dictionary<int, string> selectedCommissions { get; set; } = new Dictionary<int, string>();
     private bool isInCarousel;
     private bool editCommission = false;
     private string updatedType;
     private string updatedDescription;
     private decimal updatedPrice;
-    private bool addCommission;
+    private string newCommissionType;
+    private string newCommissionDescription;
+    private decimal newCommissionPrice;
+    private bool addCommission = false;
+    CommissionExample newCommission = new CommissionExample();
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -155,6 +170,8 @@
             {
                 // Mark the entity for deletion
                 context.ExampleImages.Remove(request);
+
+                // Save changes to the database
                 await context.SaveChangesAsync();
             }
         }
@@ -162,7 +179,10 @@
 
     public async Task EditTag(ExampleImage cr)
     {
-        if (cr is null) { throw new ArgumentNullException(nameof(cr)); }
+        if (cr is null)
+        {
+            throw new ArgumentNullException(nameof(cr));
+        }
 
         using (var context = contextFactory.CreateDbContext())
         {
@@ -170,24 +190,32 @@
                 .Where(c => c.Id == cr.Id)
                 .FirstOrDefaultAsync();
 
+
             if (request != null)
             {
                 var selectedCommission = selectedCommissions[cr.Id];
 
                 var newType = await context.CommissionExamples
-                    .Where(c => c.CommissionType == selectedCommission)
-                    .FirstOrDefaultAsync();
+                .Where(c => c.CommissionType == selectedCommission)
+                .FirstOrDefaultAsync();
 
-                if (selectedCommission == "No Type")
+                if (newType != null || selectedCommission == "No Type")
                 {
-                    request.CommissionExampleId = null;
-                }
-                else if (newType != null)
-                {
-                    request.CommissionExampleId = newType.Id;
+                    if (selectedCommission == "No Type")
+                    { request.CommissionExampleId = null; }
+                    else
+                    // Edit what you need to
+                    {
+                        request.CommissionExampleId = newType.Id;
+                    }
+
+                    // Save changes to the database
                 }
 
-                request.IsInCarousel = isInCarousel;
+                if (isInCarousel)
+                    request.IsInCarousel = true;
+                else
+                    request.IsInCarousel = false;
 
                 await context.SaveChangesAsync();
             }
@@ -215,6 +243,7 @@
             }
 
             await context.SaveChangesAsync();
+            editCommission = false;
         }
     }
 
@@ -222,14 +251,23 @@
     {
         using (var context = contextFactory.CreateDbContext())
         {
-            var addType = new CommissionExample();
+            var newCommission = new CommissionExample()
+                {
+                    CommissionType = newCommissionType,
+                    Description = newCommissionDescription,
+                    Price = newCommissionPrice,
+                    ArtistId = 1
+                };
 
-            addType.Price = updatedPrice;
-            addType.Description = updatedDescription;
-            addType.CommissionType = updatedType;
-
-            commissions.Add(addType);
+            commissions.Add(newCommission);
             await context.SaveChangesAsync();
         }
+
+            addCommission = false;
+    }
+
+    void ToggleAddCommission()
+    {
+        addCommission = !addCommission;
     }
 }
