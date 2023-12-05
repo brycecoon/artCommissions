@@ -6,114 +6,111 @@
 @inject IDbContextFactory<PostgresContext> contextFactory
 @inject NavigationManager nav
 
-<h3>Modify Commission Requests</h3>
+<div class="my-5">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Commission Type</th>
+                <th scope="col">Description</th>
+                <th scope="col">References</th>
+                <th scope="col">Email</th>
+                <th scope="col">Cost</th>
+                <th scope="col">Amount Paid</th>
+                <th scope="col">Accepted Status</th>
+                <th scope="col" />
+                <th scope="col" />
+            </tr>
+        </thead>
+        <tbody>
+            @if (commissions is not null && commissions.Count > 0)
+                @foreach (var cr in commissions)
+                {
+                    <tr>
+                        <td>@cr.Firstname @cr.Lastname</td>
+                        <td>@cr.CommissionType</td>
+                        <td>@cr.Details</td>
 
-<table class="table table-striped">
-	<thead>
-		<tr>
-		<th scope="col">Name</th>
-		<th scope="col">Commission Type</th>
-		<th scope="col">Description</th>
-		<th scope="col">Email</th>
-		<th scope="col">Cost</th>
-        <th scope="col">Amount Paid</th>
-		<th scope="col">Accepted Status</th>
-        </tr>
-	</thead>
-	<tbody>
-	@if(commissions is not null && commissions.Count > 0)	
-		@foreach (var cr in commissions)
-		{
-			if(cr.AcceptedStatus == "ACCEPTED" || cr.AcceptedStatus == "PENDING")
-			{
-				
-			<tr>
+                        <td>
+                            @foreach (var row in referenceImages)
+                            {
+                                @if (cr.Id == row.CommissionRequestId && cr.AcceptedStatus is not null)
+                                {
+                                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(row.Image)" class="d-block w-100" style="max-width: 50px">
+                                }
+                            }
+                        </td>
 
-				<td>@cr.Firstname @cr.Lastname</td>
-				<td>@cr.CommissionType</td>
-				<td>@cr.Details</td>
-				<td>@cr.Email</td>
-				<td>$@cr.CommissionCost</td>
-				<td>$@cr.AmmountAlreadyPaid</td>
-				<td>@cr.AcceptedStatus</td>
+                        <td>@cr.Email</td>
+                        <td>$@cr.CommissionCost</td>
+                        <td>$@cr.AmmountAlreadyPaid</td>
+                        <td>@cr.AcceptedStatus</td>
 
-				@if (cr.AcceptedStatus == "PENDING")
-					{
-					<td>
-						<button
-							@onclick="async () => {
-									await Accept(cr.Id);
-									
-								}"
-										class="btn btn-primary" aria-disabled="false">
-								Accept
-						</button>
-					</td>
-					<td>
-						<button 
-							@onclick="() => {
-									Deny(cr); 
-									commissions.Remove(cr); 
-								}"
-							class="btn btn-danger" aria-disabled="false">
-								Deny
-						</button> @*delete sets to null*@
-					</td>
-				}
-					</tr>
-				}
-				@foreach(var row in referenceImages)
-				@if (cr.Id == row.CommissionRequestId && cr.AcceptedStatus is not null)
-				{
-					<p>ReferenceImage</p>
-					<img src="data:image/jpeg;base64,@Convert.ToBase64String(row.Image)" alt="Los Angeles" class="d-block w-100" style="max-width: 50px">
-				}
-
-		}
-	</tbody>
-</table>
+                        @if (cr.AcceptedStatus == "PENDING")
+                        {
+                            <td>
+                                <button @onclick="async () => { await Accept(cr.Id); }" class="btn btn-primary" aria-disabled="false">
+                                    Accept
+                                </button>
+                            </td>
+                            <td>
+                                <button @onclick="() => { Deny(cr); commissions.Remove(cr); }" class="btn btn-danger" aria-disabled="false">
+                                    Deny
+                                </button> @*delete sets to null*@
+                            </td>
+                        }
+                        else
+                        {
+                            <td></td>
+                            <td></td>
+                        }
+                    </tr>
+                }
+        </tbody>
+    </table>
+</div>
 
 @code {
-	private List<CommissionRequest>? commissions { get; set; }
-	private List<ReferenceImage>? referenceImages { get; set; }
+    private List<CommissionRequest>? commissions { get; set; }
+    private List<ReferenceImage>? referenceImages { get; set; }
 
-	protected override async Task OnInitializedAsync()
-	{
-		var context = contextFactory.CreateDbContext();
+    protected override async Task OnInitializedAsync()
+    {
+        var context = contextFactory.CreateDbContext();
 
-		commissions = await context.CommissionRequests
-		.Where(i => i.ArtistId == 1)//PULL ALL THE NOT DENIED ONES TO FIX THE LIGHT LIGHT DARK DARK ISSUE
-		.ToListAsync();
+        commissions = await context.CommissionRequests
+            .Where(i => i.ArtistId == 1)//PULL ALL THE NOT DENIED ONES TO FIX THE LIGHT LIGHT DARK DARK ISSUE
+            .ToListAsync();
 
-		referenceImages = await context.ReferenceImages
-		.ToListAsync();
-	}
+        referenceImages = await context.ReferenceImages
+            .ToListAsync();
+    }
 
-	public async Task Accept(int id)
-	{
-		var context = contextFactory.CreateDbContext();
+    public async Task Accept(int id)
+    {
+        var context = contextFactory.CreateDbContext();
 
-		CommissionRequest? crtoupdate = await context.CommissionRequests
-			.Where(c => c.Id == id)
-			.FirstOrDefaultAsync();
+        CommissionRequest? crtoupdate = await context.CommissionRequests
+            .Where(c => c.Id == id)
+            .FirstOrDefaultAsync();
 
-		if (crtoupdate != null)
-		{
-			crtoupdate.AcceptedStatus = "ACCEPTED";
-			await context.SaveChangesAsync();
-		}
-		nav.NavigateTo("/admin/commissions" , true);
-	}
+        if (crtoupdate != null)
+        {
+            crtoupdate.AcceptedStatus = "ACCEPTED";
+            await context.SaveChangesAsync();
+        }
+        nav.NavigateTo("/admin/commissions", true);
+    }
 
-	public async Task Deny(CommissionRequest cr)
-	{
-		var context = contextFactory.CreateDbContext();
+    public async Task Deny(CommissionRequest cr)
+    {
+        var context = contextFactory.CreateDbContext();
 
-		var request = await context.CommissionRequests
-			.Where(c => c.Id == cr.Id)
-			.FirstOrDefaultAsync();
+        var request = await context.CommissionRequests
+            .Where(c => c.Id == cr.Id)
+            .FirstOrDefaultAsync();
 
-		request.AcceptedStatus = "DENIED";
-		await context.SaveChangesAsync();
-	}
+        request.AcceptedStatus = "DENIED";
+        await context.SaveChangesAsync();
+    }
 }
