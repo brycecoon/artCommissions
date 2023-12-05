@@ -8,39 +8,45 @@
 <h4>Here you can put your art in a carousel, delete your art, or change the type</h4>
 <h4>as well as change what types of commission you accept</h4>
 
-<button value="@editCommission" @onclick="() => editCommission = true">Edit commission types</button>
+<button class="p-md-1 m-4" value="@editCommission" @onclick="() => editCommission = true">Edit commission types</button>
+<br>
 @if (editCommission)
 {
-    <table>
+    //<table class="table">
+        <thead>
+            <tr>
         <thead>Commission Type</thead>
         <thead>Description</thead>
         <thead>Price</thead>
-    </table>
-    //types that you can modify
-    @foreach (var row in commissions)
-    {
-        <tr>
-        <div class="card flex-row">
-            <input type="text" @bind="@updatedType" placeholder="@row.CommissionType">
-            <input type="text" @bind="@updatedDescription" placeholder="@row.Description">
-            <input type="text" @bind="@updatedPrice" placeholder="@row.Price">
-            <button class="btn-primary" @onclick="() => HandleEditType(row.Id)">Save Changes</button>
-        </div>
+        <th>Action</th>
         </tr>
-    }
+        </thead>
+        <tbody></tbody>
+        //types that you can modify
+        @foreach (var row in commissions)
+        {
+            <tr>
+                <td><input type="text" @bind="@row.CommissionType" placeholder="@row.CommissionType"></td>
+                <td><input type="text" @bind="@row.Description" placeholder="@row.Description"></td>
+                <td> <input type="text" @bind="@row.Price" placeholder="@row.Price"></td>
+                <td><button class="btn-primary" @onclick="() => HandleEditType(row)">Save Changes</button></td>
+            </tr>
+        }
 
-    //add a new type
-    <button value="@addCommission" @onclick="() => addCommission = true">Add a new commission type</button>
-    @if (addCommission)
-    {
-        <div class="card flex-row">
-            <input type="text" @bind="@updatedType" placeholder="Commission Type Name">
-            <input type="text" @bind="@updatedDescription" placeholder="Description of Commisson type">
-            <input type="text" @bind="@updatedPrice" placeholder="Starter Price $:">
-        <button class="btn-primary" @onclick="() => HandleAddType()">Save Changes</button>
-        </div>
+@*         //add a new type
+        @if (addCommission)
+        {
+                <input type="text" @bind="@newCommission.CommissionType" placeholder="Commission Type Name">
+            <input type="text" @bind="@newCommission.Description" placeholder="Description of Commisson type">
+                <input type="text" @bind="@newCommission.Price" placeholder="Starter Price $:">
+                <button class="btn-primary" @onclick="() => HandleAddType()">Save Changes</button>
 
-    }
+        }
+        </tbody>
+    </table>
+
+
+    <button class="p-md-1 m-4" @onclick="ToggleAddCommission">Add a new commission type</button> *@
 
 }
 
@@ -188,17 +194,25 @@
         }
     }
 
-    private async Task HandleEditType(int id)
+    private async Task HandleEditType(CommissionExample cr)
     {
+        if (cr is null)
+        {
+            throw new ArgumentNullException(nameof(cr));
+        }
+
         using (var context = contextFactory.CreateDbContext())
         {
             var request = await context.CommissionExamples
-            .Where(c => c.Id == id)
+            .Where(c => c.Id == cr.Id)
             .FirstOrDefaultAsync();
 
-            request.CommissionType = updatedType;
-            request.Description = updatedDescription;
-            request.Price = updatedPrice;
+            if (request is not null)
+            {
+                request.CommissionType = updatedType;
+                request.Description = updatedDescription;
+                request.Price = updatedPrice;
+            }
 
             await context.SaveChangesAsync();
         }

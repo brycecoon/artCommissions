@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddDbContextFactory<PostgresContext>(config => config.UseNpgsql(builder.Configuration.GetConnectionString("db")));
+builder.Services.AddDbContextFactory<PostgresContext>(config => config.UseNpgsql(builder.Configuration["db"]));
 
 // DefaultUserService
 builder.Services.AddHostedService<DefaultUserService>();
@@ -28,11 +28,11 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.Sign
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 builder.Services.AddAuthentication().AddGoogle(options =>
 {
-    var clientid = builder.Configuration["Google:ClientId"];
-    options.ClientId = builder.Configuration["Google:ClientId"];
-    options.ClientSecret = builder.Configuration["Google:ClientSecret"];
-    options.ClaimActions.MapJsonKey("urn:google:profile", "link");
-    options.ClaimActions.MapJsonKey("urn:google:image", "picture");
+    //var clientid = builder.Configuration["ClientId"];
+    options.ClientId = builder.Configuration["ClientId"];
+    options.ClientSecret = builder.Configuration["ClientSecret"];
+    //options.ClaimActions.MapJsonKey("urn:google:profile", "link");
+    //options.ClaimActions.MapJsonKey("urn:google:image", "picture");
 }
 );
 
