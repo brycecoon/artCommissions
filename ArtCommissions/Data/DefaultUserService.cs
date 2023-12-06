@@ -16,10 +16,10 @@ public class DefaultUserService : BackgroundService
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var logger = scope.ServiceProvider.GetRequiredService < ILogger<DefaultUserService>>();
 
-        foreach(var configItem in config.AsEnumerable())
-        {
-            logger.LogInformation("====CONFIG KEY: {key} = {value}", configItem.Key, configItem.Value);
-        }
+        //foreach(var configItem in config.AsEnumerable())
+        //{
+        //    logger.LogInformation("====CONFIG KEY: {key} = {value}", configItem.Key, configItem.Value);
+        //}
 
         var username = config[Constants.DefaultAdminUsername];
         var password = config[Constants.DefaultAdminPassword];
