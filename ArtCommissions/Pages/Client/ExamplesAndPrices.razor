@@ -3,82 +3,93 @@
 @using Microsoft.EntityFrameworkCore;
 @using Microsoft.AspNetCore.Components.Web;
 @inject IDbContextFactory<PostgresContext> contextFactory
+@inject IJSRuntime JSRuntime
 
 
 @if (exampleImages is not null)
 {
-@*     <div class="control-container w-75">
-        @foreach(var row in Commissions){
-        <SfCarousel>
-            @foreach (var row2 in exampleImages)
-            {
-                    @if (row.Id == row2.CommissionExampleId)
-                    {
-                        <CarouselItem>
-                            <figure class="img-container">
-                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(row2.Image)" class="d-block w-100" style="max-width: 100px">
-                        <h3>Commission Type: @row.CommissionType</h3>
-                        <p>Price Adder: @row.Price</p>
-                        <p>Description: @row.Description</p>
-                    </figure>
-                </CarouselItem> }
-            }
-        </SfCarousel>
-            }
-    </div> *@
-
     <div class="d-flex flex-column p-5">
-        @* Carousel *@
-        <div class="d-flex justify-content-center">
-            <img src="images/imageUpload.png" />
-        </div>
+        @foreach (var commissionExample in Commissions)
+        {
+            <h3 class="d-flex justify-content-center">@commissionExample.CommissionType</h3>
 
-        <div class="d-flex flex-column">
-            @* Price? *@
-            <div class="d-flex justify-content-center">
-                <p>$200</p>
+            @* Carousel *@
+            <div id="@(carouselName + commissionExample.Id)" class="d-flex justify-content-center align-items-center carousel slide" data-bs-ride="carousel" data-bs-wrap="true" data-bs-interval="3000" data-bs-pause="false">
+                @for (int i = 0; i < d[commissionExample.Id].Count(); i++)
+                {
+                    @if (i == 0)
+                    {
+                        <div class="carousel-item active">
+                            <img class="img img-responsive rounded" src="data:image/jpeg;base64,@Convert.ToBase64String(d[commissionExample.Id][i].Image)" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="carousel-item">
+                            <img class="img img-responsive rounded" src="data:image/jpeg;base64,@Convert.ToBase64String(d[commissionExample.Id][i].Image)" />
+                        </div>
+                    }
+                }
             </div>
 
-            @* Description *@
-            <div class="d-flex justify-content-center">
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum molestiae quae dignissimos repellendus perferendis possimus accusamus, blanditiis laboriosam dolor itaque quasi exercitationem beatae saepe labore aspernatur doloremque accusantium architecto suscipit.</p>
+            @* Art info *@
+            <div class="d-flex flex-column p-5">
+                <div class="d-flex justify-content-center">
+                    <p>@commissionExample.Price</p>
+                </div>
+                
+                <div class="d-flex justify-content-center px-5">
+                    <p>@commissionExample.Description</p>
+                </div>
             </div>
-        </div>
+        }
     </div>
-
 }
 
 @code {
-    [Parameter]
     public int ArtistID { get; set; } = 1;
-    private IEnumerable<ExampleImage>? exampleImages { get; set; }
     public string? Name { get; set; }
     public string? About { get; set; }
-    private List<int[]> imageBytes { get; set; } = new();
     private byte[]? pfp { get; set; }
+
+    private IEnumerable<ExampleImage>? exampleImages { get; set; }
     private IEnumerable<CommissionExample>? Commissions;
-    private List<int> imageid { get; set; } = new();
+
+    private Dictionary<int, List<ExampleImage>> d = new();
+
+    const string carouselName = "carouselExampleIndicators";
+    private bool isInitialized = false;
 
 
     protected override async Task OnInitializedAsync()
     {
         var context = contextFactory.CreateDbContext();
 
-        Commissions = context.CommissionExamples.ToArray();
-
-        var artist = await context.Artists
-            .Include(a => a.Socials)
-            .FirstOrDefaultAsync(i => i.Id == ArtistID);
+        Commissions = await context.CommissionExamples
+            .Where(i => i.ArtistId == 1)
+            .ToArrayAsync();
 
         exampleImages = await context.ExampleImages
             .Where(i => i.IsInCarousel == true)
             .ToListAsync();
+
+        foreach (var commissionExample in Commissions)
+        {
+            d[commissionExample.Id] = exampleImages.Where(i => i.CommissionExampleId == commissionExample.Id).ToList();
+        }
+
+        isInitialized = true;
     }
-    
 
-    //TODO: fill in the database with example sizes, price connected to it: DONE
-
-    //TODO: fill in the ExampleArtType  with data (inColor?, certain style) and how it changes the price 
-
-    //TODO: create a carousel to customize what art you will be wanting
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (isInitialized)
+        {
+            foreach (var commissionExample in Commissions)
+            {
+                object[] args = { carouselName + commissionExample.Id };
+                await JSRuntime.InvokeVoidAsync("startCarousel", args);
+            }
+        }
+    }
 }
