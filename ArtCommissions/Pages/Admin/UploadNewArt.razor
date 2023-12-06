@@ -19,8 +19,6 @@
     </div>
 
     <div>
-        <p class="d-flex justify-content-center mt-2">Head over to the edit images page to change their tags</p>
-
         <div class="my-3 d-flex justify-content-center">
             <InputFile OnChange="@HandleFileChange" />
             <button class="btn btn-primary d-inline mx-2" @onclick="SaveFileToDatabase">Upload</button>
@@ -31,6 +29,10 @@
             <p class="text-center dissapear">@confirmationMessage</p>
             <!-- using the class makes the message disappear -->
         }
+    </div>
+
+    <div>
+        @* ////////////////////////////////////////////// BLARING TODO //////////////////////////////////////////////////////////// *@
     </div>
 </div>
 
@@ -69,8 +71,14 @@
         {
             var context = contextFactory.CreateDbContext();
 
+            CommissionExample comm = new()
+                {
+                    ArtistId = 1,
+                };
+
             ExampleImage art = new ExampleImage()
                 {
+
                     Image = uploadImagesBytes
                 };
 

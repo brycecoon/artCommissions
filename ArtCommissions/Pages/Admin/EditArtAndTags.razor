@@ -8,7 +8,7 @@
 <h4 class="pt-1 text-center">Here you can put your art in a carousel, delete your art, or change the type</h4>
 <h4 class="py-1 text-center">as well as change what types of commission you accept</h4>
 
-<button class="p-md-1 m-4" value="@editCommission" @onclick="ToggleEditCommission">Edit commission types</button>
+<button class="btn btn-primary p-md-1 m-4" value="@editCommission" @onclick="ToggleEditCommission">Edit commission types</button>
 <br>
 @if (editCommission)
 {
@@ -30,26 +30,27 @@
                         <td><input type="text" @bind="@updatedType[row.Id]" placeholder="@row.CommissionType"></td>
                         <td><input type="text" @bind="@updatedDescription[row.Id]" placeholder="@row.Description"></td>
                         <td> <input type="text" @bind="@updatedPrice[row.Id]" placeholder="@row.Price"></td>
-                        <td><button class="btn-primary" @onclick="() => HandleEditType(row.Id)">Save Changes</button></td>
+                        <td><button class="btn btn-primary" @onclick="() => HandleEditType(row.Id)">Save Changes</button></td>
                     </tr>
                 }
 
             }
-            <tr><button class="p-md-1 m-4" @onclick="ToggleAddCommission">Add a new commission type</button></tr>
+            <tr>
+                <td>
+                    <button class="btn btn-primary p-md-1 m-4" @onclick="ToggleAddCommission">Add a new commission type</button>
+                </td>
+            </tr>
 
             @if (addCommission)
             {
                 <input type="text" @bind="@newCommissionType" placeholder="Commission Type Name">
                 <input type="text" @bind="@newCommissionDescription" placeholder="Description of Commisson type">
                 <input type="text" @bind="@newCommissionPrice" placeholder="Starter Price $:">
-                <button class="btn-primary" @onclick="() => HandleAddType()">Save Changes</button>
+                <button class="btn btn-primary" @onclick="() => HandleAddType()">Save Changes</button>
 
             }
         </tbody>
     </table>
-
-
-
 }
 
 <div class="row row-cols-1 row-cols-md-2 g-4">
@@ -57,37 +58,37 @@
         @foreach (var row in exampleImages)
         {
             <div class="col mb-4">
-                <div class="card py-md-2 mx-1 mx-md-2 text-center p-3" style="background-color: gray; border: none;">
+                <div class="card py-md-2 mx-1 mx-md-2 text-center p-3" style="background-color: #D5DB9F; border: none;">
                     <div class="card h-100 custom-background p-3" style="background-color: blanchedalmond">
                         <div class="text-center">
                             <img src="data:image/jpeg;base64,@Convert.ToBase64String(row.Image)" class="card-img-top img-fluid mt-3" style="max-height: 200px; object-fit: contain;">
                         </div>
                         <div class="card-body">
-                        @if (row.CommissionExampleId != null && row.CommissionExample != null)
-                        {
-                            <p class="text-left">Commission type: @row.CommissionExample.CommissionType</p>
-                        }
-                        else
-                        {
-                            <p class="card-text">Commission type: N/A</p>
-                        }
-
-                        <select class="form-select mb-2" value="@selectedCommissions[row.Id]" @onchange="e => HandleCommissionChange(row.Id, e.Value.ToString())">
-                            @foreach (var row2 in commissions)
+                            @if (row.CommissionExampleId != null && row.CommissionExample != null)
                             {
-                                <option value="@row2.CommissionType">@row2.CommissionType</option>
+                                <p class="text-left">Commission type: @row.CommissionExample.CommissionType</p>
                             }
-                            <option>No Type</option>
-                        </select>
+                            else
+                            {
+                                <p class="card-text">Commission type: N/A</p>
+                            }
 
-                        @if (row.IsInCarousel.HasValue && row.IsInCarousel.Value)
-                        {
-                            <p class="card-text">Item Currently in Carousel: Yes</p>
-                        }
-                        else
-                        {
-                            <p class="card-text">Item Currently in Carousel: No</p>
-                        }
+                            <select class="form-select mb-2" value="@selectedCommissions[row.Id]" @onchange="e => HandleCommissionChange(row.Id, e.Value.ToString())">
+                                @foreach (var row2 in commissions)
+                                {
+                                    <option value="@row2.CommissionType">@row2.CommissionType</option>
+                                }
+                                <option>No Type</option>
+                            </select>
+
+                            @if (row.IsInCarousel.HasValue && row.IsInCarousel.Value)
+                            {
+                                <p class="card-text">Item Currently in Carousel: Yes</p>
+                            }
+                            else
+                            {
+                                <p class="card-text">Item Currently in Carousel: No</p>
+                            }
 
                             <p class="card-text">Show this image in the Carousel?</p>
                             <div class="form-check form-check-inline">
@@ -106,7 +107,6 @@
                 </div>
             </div>
         }
-    }
 </div>
 
 <style>
@@ -153,7 +153,7 @@
         .ToListAsync();
 
         exampleImages = await context.ExampleImages
-        .Where(c=> c.CommissionExample.ArtistId == 1)
+        .Where(c => c.CommissionExample.ArtistId == 1)
             .ToListAsync();
 
         foreach (var image in exampleImages)
@@ -275,13 +275,13 @@
                 ArtistId = 1
             };
 
-            updatedType[newCommission.Id] = newCommissionType;
-            updatedDescription[newCommission.Id] = newCommissionDescription;
-            updatedPrice[newCommission.Id] = newCommissionPrice;
+        updatedType[newCommission.Id] = newCommissionType;
+        updatedDescription[newCommission.Id] = newCommissionDescription;
+        updatedPrice[newCommission.Id] = newCommissionPrice;
 
-            
-            await context.CommissionExamples.AddAsync(newCommission);
-            await context.SaveChangesAsync();
+
+        await context.CommissionExamples.AddAsync(newCommission);
+        await context.SaveChangesAsync();
 
         addCommission = false;
     }
