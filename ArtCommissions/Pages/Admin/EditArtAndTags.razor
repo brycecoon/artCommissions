@@ -14,21 +14,21 @@
 {
     <table class="table">
         <thead>
-           <tr>
-        <th>Commission Type</th>
-        <th>Description</th>
-        <th>Price</th>
-        <th>Action</th>
-        </tr>
+            <tr>
+                <th>Commission Type</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Action</th>
+            </tr>
         </thead>
         <tbody>
             @foreach (var row in commissions)
             {
                 <tr>
-                    <td><input type="text" @bind="@updatedType" placeholder="@row.CommissionType"></td>
-                    <td><input type="text" @bind="@updatedDescription" placeholder="@row.Description"></td>
-                    <td> <input type="text" @bind="@updatedPrice" placeholder="@row.Price"></td>
-                    <td><button class="btn-primary" @onclick="() => HandleEditType(row)">Save Changes</button></td>
+                    <td><input type="text" @bind="@updatedType[row.Id]" placeholder="@row.CommissionType"></td>
+                    <td><input type="text" @bind="@updatedDescription[row.Id]" placeholder="@row.Description"></td>
+                    <td> <input type="text" @bind="@updatedPrice[row.Id]" placeholder="@row.Price"></td>
+                    <td><button class="btn-primary" @onclick="() => HandleEditType(row.Id)">Save Changes</button></td>
                 </tr>
             }
             <tr><button class="p-md-1 m-4" @onclick="ToggleAddCommission">Add a new commission type</button></tr>
@@ -58,7 +58,7 @@
                         <img src="data:image/jpeg;base64,@Convert.ToBase64String(row.Image)" alt="Los Angeles" class="card-img-top img-fluid" style="max-height: 200px; object-fit: contain;">
                     </div>
                     <div class="card-body">
-                        @if (row.CommissionExampleId.HasValue && commissions != null)
+                        @if (row.CommissionExampleId != null && row.CommissionExample != null)
                         {
                             <p class="card-text">Commission type: @row.CommissionExample.CommissionType</p>
                         }
@@ -126,9 +126,9 @@
     private Dictionary<int, string> selectedCommissions { get; set; } = new Dictionary<int, string>();
     private bool isInCarousel;
     private bool editCommission = false;
-    private string updatedType;
-    private string updatedDescription;
-    private decimal updatedPrice;
+    private Dictionary<int, string> updatedType { get; set; } = new Dictionary<int, string>();
+    private Dictionary<int, string> updatedDescription { get; set; } = new Dictionary<int, string>();
+    private Dictionary<int, decimal> updatedPrice { get; set; } = new Dictionary<int, decimal>();
     private string newCommissionType;
     private string newCommissionDescription;
     private decimal newCommissionPrice;
@@ -141,6 +141,7 @@
         var context = contextFactory.CreateDbContext();
 
         commissions = await context.CommissionExamples
+        .Where(c => c.ArtistId == 1)
         .OrderBy(c => c.Id)
         .ToListAsync();
 
@@ -150,6 +151,13 @@
         foreach (var image in exampleImages)
         {
             selectedCommissions[image.Id] = commissions.FirstOrDefault(c => c.Id == image.Id)?.CommissionType ?? "No Type";
+        }
+
+        foreach (var type in commissions)
+        {
+            updatedType[type.Id] = commissions.FirstOrDefault(c => c.Id == type.Id)?.CommissionType;
+            updatedDescription[type.Id] = commissions.FirstOrDefault(c => c.Id == type.Id)?.Description;
+            updatedPrice[type.Id] = commissions.FirstOrDefault(c => c.Id == type.Id)?.Price ?? 0m;
         }
     }
 
@@ -222,9 +230,9 @@
         }
     }
 
-    private async Task HandleEditType(CommissionExample cr)
+    private async Task HandleEditType(int cr)
     {
-        if (cr is null)
+        if (cr == null)
         {
             throw new ArgumentNullException(nameof(cr));
         }
@@ -232,14 +240,14 @@
         using (var context = contextFactory.CreateDbContext())
         {
             var request = await context.CommissionExamples
-            .Where(c => c.Id == cr.Id)
+            .Where(c => c.Id == cr)
             .FirstOrDefaultAsync();
 
             if (request is not null)
             {
-                request.CommissionType = updatedType;
-                request.Description = updatedDescription;
-                request.Price = updatedPrice;
+                request.CommissionType = updatedType[cr];
+                request.Description = updatedDescription[cr];
+                request.Price = updatedPrice[cr];
             }
 
             await context.SaveChangesAsync();
@@ -249,21 +257,25 @@
 
     private async Task HandleAddType()
     {
-        using (var context = contextFactory.CreateDbContext())
-        {
-            var newCommission = new CommissionExample()
-                {
-                    CommissionType = newCommissionType,
-                    Description = newCommissionDescription,
-                    Price = newCommissionPrice,
-                    ArtistId = 1
-                };
+        var context = contextFactory.CreateDbContext();
 
-            commissions.Add(newCommission);
+        CommissionExample newCommission = new CommissionExample()
+            {
+                CommissionType = newCommissionType,
+                Description = newCommissionDescription,
+                Price = newCommissionPrice,
+                ArtistId = 1
+            };
+
+            updatedType[newCommission.Id] = newCommissionType;
+            updatedDescription[newCommission.Id] = newCommissionDescription;
+            updatedPrice[newCommission.Id] = newCommissionPrice;
+
+            
+            await context.CommissionExamples.AddAsync(newCommission);
             await context.SaveChangesAsync();
-        }
 
-            addCommission = false;
+        addCommission = false;
     }
 
     void ToggleAddCommission()
