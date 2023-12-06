@@ -5,6 +5,7 @@
 
 @inject IDbContextFactory<PostgresContext> contextFactory
 @inject NavigationManager nav
+@inject ILogger<PostgresContext> logger
 
 <div class="my-5">
     <table class="table table-striped">
@@ -60,8 +61,7 @@
                         }
                         else
                         {
-                            <td></td>
-                            <td></td>
+
                         }
                     </tr>
                 }
@@ -75,41 +75,67 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var context = contextFactory.CreateDbContext();
+        try
+        {
+            var context = contextFactory.CreateDbContext();
 
-        commissions = await context.CommissionRequests
-            .Where(i => i.ArtistId == 1)
-            .ToListAsync();
+            commissions = await context.CommissionRequests
+                .Where(i => i.ArtistId == 1)
+                .ToListAsync();
 
-        referenceImages = await context.ReferenceImages
-            .ToListAsync();
+            referenceImages = await context.ReferenceImages
+                .ToListAsync();
+
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred during the initialization of the Commissions component.");
+        }
+
     }
 
     public async Task Accept(int id)
     {
-        var context = contextFactory.CreateDbContext();
-
-        CommissionRequest? crtoupdate = await context.CommissionRequests
-            .Where(c => c.Id == id)
-            .FirstOrDefaultAsync();
-
-        if (crtoupdate != null)
+        try
         {
-            crtoupdate.AcceptedStatus = "ACCEPTED";
-            await context.SaveChangesAsync();
+            var context = contextFactory.CreateDbContext();
+
+            CommissionRequest? crtoupdate = await context.CommissionRequests
+                .Where(c => c.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (crtoupdate != null)
+            {
+                crtoupdate.AcceptedStatus = "ACCEPTED";
+                await context.SaveChangesAsync();
+            }
+            nav.NavigateTo("/admin/commissions", true);
+
         }
-        nav.NavigateTo("/admin/commissions", true);
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred during the Accept method.");
+        }
     }
 
     public async Task Deny(CommissionRequest cr)
     {
-        var context = contextFactory.CreateDbContext();
+        try
+        {
+            var context = contextFactory.CreateDbContext();
 
-        var request = await context.CommissionRequests
-            .Where(c => c.Id == cr.Id)
-            .FirstOrDefaultAsync();
+            var request = await context.CommissionRequests
+                .Where(c => c.Id == cr.Id)
+                .FirstOrDefaultAsync();
 
-        request.AcceptedStatus = "DENIED";
-        await context.SaveChangesAsync();
+            request.AcceptedStatus = "DENIED";
+            await context.SaveChangesAsync();
+
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred during the Deny method.");
+        }
+
     }
 }

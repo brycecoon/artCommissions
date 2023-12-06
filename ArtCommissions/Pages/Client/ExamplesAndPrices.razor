@@ -4,11 +4,10 @@
 @using Microsoft.AspNetCore.Components.Web;
 @inject IDbContextFactory<PostgresContext> contextFactory
 
-<h3>ExamplesAndPrices</h3>
 
 @if (exampleImages is not null)
 {
-    <div class="control-container w-75">
+@*     <div class="control-container w-75">
         @foreach(var row in Commissions){
         <SfCarousel>
             @foreach (var row2 in exampleImages)
@@ -26,11 +25,27 @@
             }
         </SfCarousel>
             }
+    </div> *@
+
+    <div class="d-flex flex-column p-5">
+        @* Carousel *@
+        <div class="d-flex justify-content-center">
+            <img src="images/imageUpload.png" />
+        </div>
+
+        <div class="d-flex flex-column">
+            @* Price? *@
+            <div class="d-flex justify-content-center">
+                <p>$200</p>
+            </div>
+
+            @* Description *@
+            <div class="d-flex justify-content-center">
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum molestiae quae dignissimos repellendus perferendis possimus accusamus, blanditiis laboriosam dolor itaque quasi exercitationem beatae saepe labore aspernatur doloremque accusantium architecto suscipit.</p>
+            </div>
+        </div>
     </div>
-}
-else
-{
-    <p>No image</p>
+
 }
 
 @code {
