@@ -79,7 +79,7 @@ public class Form
         request.ArtistId = 1;                 /////////////////////////////////HARD CODED VALUE///////////////////////////
         request.CommissionType = SelectedType;
         
-        string apiUrl = "https://artapiclass25.azurewebsites.net"; ///Change THissssssssssssssssssssssssssss
+        string apiUrl = "https://artapiclass25.azurewebsites.net"; ///Change THisssSSsssssSSSSSsssssssSSSSS
         //string apiUrl = "https://localhost:7087/CommissionRequest";
         string email = request.Email;
         string subject = "Thank you for your request!";
@@ -160,7 +160,7 @@ public class Form
         catch (Exception ex)
         {
             LogError(ex, "An error occurred while saving the file to the database.");
-            ////// Todo: fimx me help please :(((((( i so sad and don't wanna work
+            ////// Todo: fimx me help please :(((((( i so sad and don't wanna work. me too bud, me too
         }
     }
 

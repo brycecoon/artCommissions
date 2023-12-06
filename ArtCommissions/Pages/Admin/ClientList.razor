@@ -6,11 +6,14 @@
 
 @inject IDbContextFactory<PostgresContext> contextFactory
 
-<h3>ClientList</h3>
-<p>this works</p>
+
+    <div class="p-3 m-3 container">
+<h3 class="justify-content-center flex-row">ClientList</h3>
+    </div>
+
 <table class="table table-striped">
     <thead>
-        <tr>
+        <tr class="justify-content-center">
             <th scope="col">Name</th>
             <th scope="col">Details</th>
             <th scope="col">Commission Type</th>
@@ -38,6 +41,7 @@
     {
         var context = contextFactory.CreateDbContext();
 
-        Commissions = context.CommissionRequests.ToArray();
+
+        Commissions = context.CommissionRequests.Where(a => a.ArtistId==1).ToArray();
     }
 }
