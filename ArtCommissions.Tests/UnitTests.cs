@@ -14,6 +14,9 @@ public class AdminTests
         var mockForm = new Mock<Form>(); // Assuming Form is not sealed and allows mocking
 
         mockForm.Setup(f => f.SaveFileToDatabase(It.IsAny<CommissionRequest>())).Returns(Task.CompletedTask).Verifiable();
+        //mockForm.Setup(f => f.LogError(It.IsAny<Exception?>(), It.IsAny<string>())).Verifiable();
+        //mockForm.Setup(f => f.LogError(null, It.IsAny<string>())).Verifiable();
+        //mockForm.Setup(f => f.LogInformation(It.IsAny<string>())).Verifiable();
 
         Form f = mockForm.Object;
         f.Name = "mweep joe";
@@ -35,6 +38,9 @@ public class AdminTests
         var mockForm = new Mock<Form>(); // Assuming Form is not sealed and allows mocking
 
         mockForm.Setup(f => f.SaveFileToDatabase(It.IsAny<CommissionRequest>())).Returns(Task.CompletedTask).Verifiable();
+        //mockForm.Setup(f => f.LogError(It.IsAny<Exception?>(), It.IsAny<string>())).Verifiable();
+        //mockForm.Setup(f => f.LogError(null, It.IsAny<string>())).Verifiable();
+        //mockForm.Setup(f => f.LogInformation(It.IsAny<string>())).Verifiable();
 
         Form f = mockForm.Object;
         f.Name = "mweep joe";
@@ -60,6 +66,9 @@ public class AdminTests
         var mockForm = new Mock<Form>(); // Assuming Form is not sealed and allows mocking
 
         mockForm.Setup(f => f.SaveFileToDatabase(It.IsAny<CommissionRequest>())).Returns(Task.CompletedTask).Verifiable();
+        mockForm.Setup(f => f.LogError(It.IsAny<Exception?>(), It.IsAny<string>())).Verifiable();
+        mockForm.Setup(f => f.LogError(null, It.IsAny<string>())).Verifiable();
+        mockForm.Setup(f => f.LogInformation(It.IsAny<string>())).Verifiable();
 
         Form f = mockForm.Object;
         f.Name = null;
@@ -81,6 +90,9 @@ public class AdminTests
         var mockForm = new Mock<Form>(); // Assuming Form is not sealed and allows mocking
 
         mockForm.Setup(f => f.SaveFileToDatabase(It.IsAny<CommissionRequest>())).Returns(Task.CompletedTask).Verifiable();
+        mockForm.Setup(f => f.LogError(It.IsAny<Exception?>(), It.IsAny<string>())).Verifiable();
+        mockForm.Setup(f => f.LogError(null, It.IsAny<string>())).Verifiable();
+        mockForm.Setup(f => f.LogInformation(It.IsAny<string>())).Verifiable();
 
         Form f = mockForm.Object;
         f.Name = "mweep joe";
@@ -100,6 +112,10 @@ public class AdminTests
     {
         // Arrange
         var mockForm = new Mock<Form>(); // Assuming Form is not sealed and allows mocking
+        mockForm.Setup(f => f.SaveFileToDatabase(It.IsAny<CommissionRequest>())).Returns(Task.CompletedTask).Verifiable();
+        mockForm.Setup(f => f.LogError(It.IsAny<Exception?>(), It.IsAny<string>())).Verifiable();
+        mockForm.Setup(f => f.LogError(null, It.IsAny<string>())).Verifiable();
+        mockForm.Setup(f => f.LogInformation(It.IsAny<string>())).Verifiable();
 
         mockForm.Setup(f => f.SaveFileToDatabase(It.IsAny<CommissionRequest>())).Returns(Task.CompletedTask).Verifiable();
 
@@ -123,6 +139,9 @@ public class AdminTests
         var mockForm = new Mock<Form>(); // Assuming Form is not sealed and allows mocking
 
         mockForm.Setup(f => f.SaveFileToDatabase(It.IsAny<CommissionRequest>())).Returns(Task.CompletedTask).Verifiable();
+        mockForm.Setup(f => f.LogError(It.IsAny<Exception?>(), It.IsAny<string>())).Verifiable();
+        mockForm.Setup(f => f.LogError(null, It.IsAny<string>())).Verifiable();
+        mockForm.Setup(f => f.LogInformation(It.IsAny<string>())).Verifiable();
 
         Form f = mockForm.Object;
         f.Name = "mweep joe";
