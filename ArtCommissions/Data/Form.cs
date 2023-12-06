@@ -1,5 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+
 
 namespace ArtCommissions.Data;
 
@@ -72,6 +76,17 @@ public class Form
         request.Details = CommissionDetails;
         request.ArtistId = 1;                 /////////////////////////////////HARD CODED VALUE///////////////////////////
         request.CommissionType = SelectedType;
+        
+        string apiUrl = "https://localhost:7087/CommissionRequest"; ///Change THissssssssssssssssssssssssssss
+        string email = request.Email;
+        string subject = "Thank you for your request!";
+        string message = $"Thank you for your request {request.Firstname}! I will get right to work on that!";
+        await CallApiAsync(apiUrl, email, subject, message);
+
+        email = "artcommissionmailer@gmail.com";
+        subject = "New Request";
+        message = $"You have a new request from {request.Firstname} {request.Lastname}. Here are the details:\n {request.Email}\n {request.Details}";
+        await CallApiAsync(apiUrl, email, subject, message);
 
         await SaveFileToDatabase(request);
         ResetFields();
@@ -135,6 +150,34 @@ public class Form
         catch
         {
             ////// Todo: fimx me help please :(((((( i so sad and don't wanna work
+        }
+    }
+
+    static async Task CallApiAsync(string apiUrl, string email, string subject, string message)
+    {
+        using (HttpClient client = new HttpClient())
+        {
+            
+            var postData = new Dictionary<string, string>
+            {
+                { "email", email }
+            };
+
+           
+            var content = new FormUrlEncodedContent(postData);
+
+            
+            HttpResponseMessage response = await client.PostAsync(apiUrl, content);
+
+            // Check if the request was successful
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("API call successful");
+            }
+            else
+            {
+                Console.WriteLine($"API call failed with status code: {response.StatusCode}");
+            }
         }
     }
 }
