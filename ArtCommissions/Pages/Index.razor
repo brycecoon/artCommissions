@@ -13,7 +13,7 @@
             <div id="@carouselName" class="d-flex order-lg-1 justify-content-center align-items-center col-lg-7 m-lg-5 carousel slide" data-bs-ride="carousel" data-bs-wrap="true" data-bs-interval="3000" data-bs-pause="false">
                 <div class="carousel-inner">
                     @for (int i = 0; i < imageBytes.Count; i++)
-                    {
+                    {   
                         @if (i == 0)
                         {
                             <div class="carousel-item active">
@@ -56,7 +56,7 @@
     public string? About { get; set; }
     private List<byte[]> imageBytes { get; set; } = new();
     private byte[]? pfp { get; set; }
-    private Artist artist { get; set; }
+    private Artist? artist { get; set; }
     private List<Social> socials { get; set; } = new();
 
     const string carouselName = "carouselExampleIndicators";
@@ -69,7 +69,7 @@
             .FirstOrDefaultAsync(i => i.Id == 1);
 
         var exampleImages = await context.ExampleImages
-            .Where(i => i.IsInCarousel == true)
+            .Where(i => i.IsInCarousel == true).Where(c => c.CommissionExample.ArtistId==1)
             .ToListAsync();
 
         socials = await context.Socials

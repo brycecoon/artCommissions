@@ -79,7 +79,7 @@ public class Form
         request.ArtistId = 1;                 /////////////////////////////////HARD CODED VALUE///////////////////////////
         request.CommissionType = SelectedType;
         
-        string apiUrl = "https://localhost:7087/CommissionRequest"; ///Change THissssssssssssssssssssssssssss
+        string apiUrl = "https://artapiclass25.azurewebsites.net"; ///Change THissssssssssssssssssssssssssss
         string email = request.Email;
         string subject = "Thank you for your request!";
         string message = $"Thank you for your request {request.Firstname}! I will get right to work on that!";
@@ -110,7 +110,8 @@ public class Form
 
     private async Task PopulateExampleTypes()
     {
-        commissionExamples = await context.CommissionExamples.ToListAsync();
+
+        commissionExamples = await context.CommissionExamples.Where(c => c.ArtistId == 1).ToListAsync();
     }
 
     private bool EmailVerification()
