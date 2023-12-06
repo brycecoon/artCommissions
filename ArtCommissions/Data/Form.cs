@@ -9,11 +9,11 @@ namespace ArtCommissions.Data;
 
 public class Form
 {
-    private readonly ILogger<Form> logger;
+    private readonly ILogger<Form>? logger;
     PostgresContext? context = null;
 
     public byte[]? imageBytes { get; set; } = null;
-    public List<CommissionExample> commissionExamples { get; private set; }
+    public List<CommissionExample>? commissionExamples { get; private set; }
     public List<CommissionRequest>? commissionRequests;
 
     public bool NameIsSelected { get; private set; } = true;
@@ -29,7 +29,6 @@ public class Form
     public Form(PostgresContext context, ILogger<Form> logger)
     {
         this.context = context;
-        this.logger = logger;
         Task.Run(() => this.PopulateExampleTypes()).Wait();
 
         NameIsSelected = true;
@@ -97,7 +96,7 @@ public class Form
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An error occurred while processing a new request.");
+            LogError(ex, "An error occurred while processing a new request.");
         }
     }
 
@@ -158,7 +157,7 @@ public class Form
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An error occurred while saving the file to the database.");
+            LogError(ex, "An error occurred while saving the file to the database.");
             ////// Todo: fimx me help please :(((((( i so sad and don't wanna work
         }
     }
@@ -185,18 +184,35 @@ public class Form
                 // Check if the request was successful
                 if (response.IsSuccessStatusCode)
                 {
-                    logger.LogInformation("API call successful");
+                    LogInformation("API call successful");
                 }
                 else
                 {
-                    logger.LogError($"API call failed with status code: {response.StatusCode}");
+                    LogError(null, $"API call failed with status code: {response.StatusCode}");
                 }
             }
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An error occurred during the API call.");
+            LogError(ex, "An error occurred during the API call.");
         }
         
+    }
+
+    public virtual void LogError(Exception? ex, string message)
+    {
+        if (ex != null)
+        {
+            logger?.LogError(ex, message);
+        }
+        else
+        {
+            logger?.LogError(message);
+        }
+    }
+
+    public virtual void LogInformation(string message)
+    {
+        logger?.LogError(message);
     }
 }

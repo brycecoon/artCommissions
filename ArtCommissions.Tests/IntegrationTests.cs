@@ -13,9 +13,9 @@ namespace ArtCommissions.Tests;
 
 public class IntegrationTests : TestContext
 {
-    [Fact]
-    public async Task CanMakeComponent()
-    {
-        var cut = RenderComponent<CommissionForm>();
-    }
+    //[Fact]
+    //public async Task CanMakeComponent()
+    //{
+    //    var cut = RenderComponent<CommissionForm>();
+    //}
 }

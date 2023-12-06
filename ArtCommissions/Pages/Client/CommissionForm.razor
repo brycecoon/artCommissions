@@ -4,7 +4,7 @@
 @using Microsoft.EntityFrameworkCore;
 @inject IDbContextFactory<PostgresContext> contextFactory
 @inject NavigationManager navigationManager
-@inject ILogger<ArtCommissions.Data.Form> logger
+@inject ILogger<Form> logger
 
 <div class="container p-3 w-xs-25 w-lg-25">
 
@@ -123,7 +123,7 @@
         try
         {
             var context = contextFactory.CreateDbContext();
-            form = new Form(context); // Inject the context into the Form constructor
+            form = new Form(context, logger); // Inject the context into the Form constructor
         }
         catch (Exception ex)
         {
