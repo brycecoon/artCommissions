@@ -25,6 +25,7 @@ public class DefaultUserService : BackgroundService
         var password = config[Constants.DefaultAdminPassword];
         if (username is null || password is null)
         {
+            logger.LogWarning("Missing Default AdminConfig Exception maybe:username is null || password is null");
             throw new MissingDefaultAdminConfigException();
         }
 
@@ -34,7 +35,11 @@ public class DefaultUserService : BackgroundService
             user = new IdentityUser() { Email = username, UserName = username, EmailConfirmed = true };
             var result = await userManager.CreateAsync(user, password);
             if (!result.Succeeded)
+            {
+                logger.LogWarning("Missing Default AdminConfig Exception maybe:username is null || password is null");
+                logger.LogInformation(string.Join("; ", result.Errors.Select(e => e.Description)));
                 throw new UnableToCreateDefaultAdminUserException(string.Join("; ", result.Errors.Select(e => e.Description)));
+            }
 
             var adminRole = await roleManager.FindByNameAsync(Constants.AdminRole);
             if (adminRole is null)

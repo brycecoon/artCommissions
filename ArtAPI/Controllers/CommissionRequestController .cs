@@ -30,10 +30,10 @@ namespace ArtAPI.Controllers
             return commissions;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Index(string email, string subject, string message)
+        [HttpPost("{email}")]
+        public async Task<IActionResult> Index(string email)
         {
-            await emailSender.SendEmailAsync(email, subject, message);
+            await emailSender.SendEmailAsync(email);
             return Ok();
         }
     }
