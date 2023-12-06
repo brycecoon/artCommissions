@@ -4,6 +4,7 @@
 @using Microsoft.EntityFrameworkCore;
 @inject IDbContextFactory<PostgresContext> contextFactory
 @inject NavigationManager navigationManager
+@inject ILogger<ArtCommissions.Data.Form> logger
 
 <div class="container p-3 w-xs-25 w-lg-25">
 
@@ -119,8 +120,16 @@
     }
     protected override async Task OnInitializedAsync()
     {
-        var context = contextFactory.CreateDbContext();
-        form = new(context);
+        try
+        {
+            var context = contextFactory.CreateDbContext();
+            form = new Form(context, logger); // Inject the context into the Form constructor
+        }
+        catch (Exception ex)
+        {
+            // Log any exceptions that occur during the initialization
+            logger.LogError($"An error occurred during initialization: {ex.Message}");
+        }
     }
 
     private async Task HandleFileChange(InputFileChangeEventArgs e)
