@@ -11,8 +11,10 @@ public class EmailSender : IEmailSender
     {
         _config = config;
     }
-    public Task SendEmailAsync(string email, string subject, string message)
+    public Task SendEmailAsync(string email)
     {
+        string subject = "Thank you for your Request";
+        string message = "Thank you for your request! We will be working on that soon!";
         var emailpassword = _config["mailpassword"];
         var client = new SmtpClient("smtp.gmail.com", 587)
         {
