@@ -80,6 +80,7 @@ public class Form
         request.CommissionType = SelectedType;
         
         string apiUrl = "https://artapiclass25.azurewebsites.net"; ///Change THissssssssssssssssssssssssssss
+        //string apiUrl = "https://localhost:7087/CommissionRequest";
         string email = request.Email;
         string subject = "Thank you for your request!";
         string message = $"Thank you for your request {request.Firstname}! I will get right to work on that!";
