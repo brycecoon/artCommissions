@@ -4,11 +4,11 @@
 @inject IDbContextFactory<PostgresContext> contextFactory
 
 
-<h3>Edit The Art!</h3>
-<h4>Here you can put your art in a carousel, delete your art, or change the type</h4>
-<h4>as well as change what types of commission you accept</h4>
+<h3 class="p-3 text-center">Edit The Art!</h3>
+<h4 class="pt-1 text-center">Here you can put your art in a carousel, delete your art, or change the type</h4>
+<h4 class="py-1 text-center">as well as change what types of commission you accept</h4>
 
-<button class="p-md-1 m-4" value="@editCommission" @onclick="() => editCommission = true">Edit commission types</button>
+<button class="p-md-1 m-4" value="@editCommission" @onclick="ToggleEditCommission">Edit commission types</button>
 <br>
 @if (editCommission)
 {
@@ -22,14 +22,18 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var row in commissions)
+            @if (updatedType.Count() > 0) // to make sure that we can actually populate these rows
             {
-                <tr>
-                    <td><input type="text" @bind="@updatedType[row.Id]" placeholder="@row.CommissionType"></td>
-                    <td><input type="text" @bind="@updatedDescription[row.Id]" placeholder="@row.Description"></td>
-                    <td> <input type="text" @bind="@updatedPrice[row.Id]" placeholder="@row.Price"></td>
-                    <td><button class="btn-primary" @onclick="() => HandleEditType(row.Id)">Save Changes</button></td>
-                </tr>
+                @foreach (var row in commissions)
+                {
+                    <tr>
+                        <td><input type="text" @bind="@updatedType[row.Id]" placeholder="@row.CommissionType"></td>
+                        <td><input type="text" @bind="@updatedDescription[row.Id]" placeholder="@row.Description"></td>
+                        <td> <input type="text" @bind="@updatedPrice[row.Id]" placeholder="@row.Price"></td>
+                        <td><button class="btn-primary" @onclick="() => HandleEditType(row.Id)">Save Changes</button></td>
+                    </tr>
+                }
+
             }
             <tr><button class="p-md-1 m-4" @onclick="ToggleAddCommission">Add a new commission type</button></tr>
 
@@ -52,15 +56,16 @@
     @if (exampleImages is not null)
         @foreach (var row in exampleImages)
         {
-            <div class="col card custom-background1">
-                <div class="card h-100 custom-background">
-                    <div class="text-center">
-                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(row.Image)" alt="Los Angeles" class="card-img-top img-fluid" style="max-height: 200px; object-fit: contain;">
-                    </div>
-                    <div class="card-body">
+            <div class="col mb-4">
+                <div class="card py-md-2 mx-1 mx-md-2 text-center p-3" style="background-color: gray; border: none;">
+                    <div class="card h-100 custom-background p-3" style="background-color: blanchedalmond">
+                        <div class="text-center">
+                            <img src="data:image/jpeg;base64,@Convert.ToBase64String(row.Image)" class="card-img-top img-fluid mt-3" style="max-height: 200px; object-fit: contain;">
+                        </div>
+                        <div class="card-body">
                         @if (row.CommissionExampleId != null && row.CommissionExample != null)
                         {
-                            <p class="card-text">Commission type: @row.CommissionExample.CommissionType</p>
+                            <p class="text-left">Commission type: @row.CommissionExample.CommissionType</p>
                         }
                         else
                         {
@@ -84,22 +89,24 @@
                             <p class="card-text">Item Currently in Carousel: No</p>
                         }
 
-                        <p class="card-text">Show this image in the Carousel?</p>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" @onchange="() => isInCarousel = true" name="carousel">
-                            <label class="form-check-label" for="inCarousel">Yes</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" @onchange="() => isInCarousel = false" name="carousel">
-                            <label class="form-check-label" for="notInCarousel">No</label>
-                        </div>
+                            <p class="card-text">Show this image in the Carousel?</p>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" @onchange="() => isInCarousel = true" name="carousel">
+                                <label class="form-check-label" for="inCarousel">Yes</label>
+                            </div>
+                            <div class="form-check form-check-inline mb-2">
+                                <input class="form-check-input" type="radio" @onchange="() => isInCarousel = false" name="carousel">
+                                <label class="form-check-label" for="notInCarousel">No</label>
+                            </div><br>
 
-                        <button @onclick="() => EditTag(row)" class="btn btn-primary">Save New Type</button>
-                        <button @onclick="() => Deny(row)" class="btn btn-danger">Delete Image</button>
+                            <button @onclick="() => EditTag(row)" class="btn btn-primary">Save New Type</button>
+                            <button @onclick="() => Deny(row)" class="btn btn-danger">Delete Image</button>
+                        </div>
                     </div>
                 </div>
             </div>
         }
+    }
 </div>
 
 <style>
@@ -146,6 +153,7 @@
         .ToListAsync();
 
         exampleImages = await context.ExampleImages
+        .Where(c=> c.CommissionExample.ArtistId == 1)
             .ToListAsync();
 
         foreach (var image in exampleImages)
@@ -281,5 +289,10 @@
     void ToggleAddCommission()
     {
         addCommission = !addCommission;
+    }
+
+    void ToggleEditCommission()
+    {
+        editCommission = !editCommission;
     }
 }
