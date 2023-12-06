@@ -35,11 +35,12 @@
 
             @if (addCommission)
             {
-                <input type="text" @bind="@newCommissionType" placeholder="Commission Type Name">
-                <input type="text" @bind="@newCommissionDescription" placeholder="Description of Commisson type">
-                <input type="text" @bind="@newCommissionPrice" placeholder="Starter Price $:">
-                <button class="btn-primary" @onclick="() => HandleAddType()">Save Changes</button>
-
+                <tr>
+                    <td><input type="text" @bind="@newCommissionType" placeholder="Commission Type Name"></td>
+                    <td><input type="text" @bind="@newCommissionDescription" placeholder="Description of Commisson type"></td>
+                    <td> <input type="text" @bind="@newCommissionPrice" placeholder="Starter Price $:"></td>
+                    <td> <button class="btn-primary" @onclick="() => HandleAddType()">Save Changes</button></td>
+                </tr>
             }
         </tbody>
     </table>
@@ -267,13 +268,13 @@
                 ArtistId = 1
             };
 
-            updatedType[newCommission.Id] = newCommissionType;
-            updatedDescription[newCommission.Id] = newCommissionDescription;
-            updatedPrice[newCommission.Id] = newCommissionPrice;
+        updatedType[newCommission.Id] = newCommissionType;
+        updatedDescription[newCommission.Id] = newCommissionDescription;
+        updatedPrice[newCommission.Id] = newCommissionPrice;
 
-            
-            await context.CommissionExamples.AddAsync(newCommission);
-            await context.SaveChangesAsync();
+
+        await context.CommissionExamples.AddAsync(newCommission);
+        await context.SaveChangesAsync();
 
         addCommission = false;
     }
