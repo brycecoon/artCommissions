@@ -69,7 +69,8 @@
             .FirstOrDefaultAsync(i => i.Id == 1);
 
         var exampleImages = await context.ExampleImages
-            .Where(i => i.IsInCarousel == true).Where(c => c.CommissionExample.ArtistId==1)
+            .Where(i => i.IsInCarousel == true)
+            .Where(c => c.CommissionExample.ArtistId==1)
             .ToListAsync();
 
         socials = await context.Socials

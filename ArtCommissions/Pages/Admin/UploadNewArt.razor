@@ -75,7 +75,7 @@
 
     private async Task HandleFileChange(InputFileChangeEventArgs e)
     {
-        using (var stream = e.File.OpenReadStream(8000000))
+        using (var stream = e.File.OpenReadStream(50000000))
         {
             using (var memoryStream = new MemoryStream())
             {

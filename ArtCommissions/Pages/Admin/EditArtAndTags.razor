@@ -1,6 +1,7 @@
 ﻿@page "/admin/edit_art"
 @using ArtCommissions.Data;
 @using Microsoft.EntityFrameworkCore;
+@using Microsoft.EntityFrameworkCore.Metadata.Internal;
 @inject IDbContextFactory<PostgresContext> contextFactory
 
 
@@ -64,22 +65,18 @@
                             <img src="data:image/jpeg;base64,@Convert.ToBase64String(row.Image)" class="card-img-top img-fluid mt-3" style="max-height: 200px; object-fit: contain;">
                         </div>
                         <div class="card-body">
-                            @if (row.CommissionExampleId != null && row.CommissionExample != null)
-                            {
-                                <p class="text-left">Commission type: @row.CommissionExample.CommissionType</p>
-                            }
-                            else
-                            {
-                                <p class="card-text">Commission type: N/A</p>
-                            }
 
-                            <select class="form-select mb-2" value="@selectedCommissions[row.Id]" @onchange="e => HandleCommissionChange(row.Id, e.Value.ToString())">
-                                @foreach (var row2 in commissions)
-                                {
-                                    <option value="@row2.CommissionType">@row2.CommissionType</option>
-                                }
-                                <option>No Type</option>
-                            </select>
+                            <div class="d-flex align-items-center">
+                                <span class="mr-2">Current Type: </span>
+                                <div class="flex-grow-1">
+                                    <select class="form-select mb-2" value="@row.CommissionExample.CommissionType" @onchange="e => HandleCommissionChange(row.Id, e.Value.ToString())">
+                                        @foreach (var row2 in commissions)
+                                        {
+                                            <option value="@row2.CommissionType">@row2.CommissionType</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
 
                             @if (row.IsInCarousel.HasValue && row.IsInCarousel.Value)
                             {
@@ -91,6 +88,8 @@
                             }
 
                             <p class="card-text">Show this image in the Carousel?</p>
+
+
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" @onchange="() => isInCarousel = true" name="carousel">
                                 <label class="form-check-label" for="inCarousel">Yes</label>
@@ -145,6 +144,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+
         var context = contextFactory.CreateDbContext();
 
         commissions = await context.CommissionExamples
@@ -215,23 +215,12 @@
                 .Where(c => c.CommissionType == selectedCommission)
                 .FirstOrDefaultAsync();
 
-                if (newType != null || selectedCommission == "No Type")
+                if (newType != null)
                 {
-                    if (selectedCommission == "No Type")
-                    { request.CommissionExampleId = null; }
-                    else
-                    // Edit what you need to
-                    {
-                        request.CommissionExampleId = newType.Id;
-                    }
-
-                    // Save changes to the database
+                    request.CommissionExampleId = newType.Id;
                 }
+                    request.IsInCarousel = isInCarousel;
 
-                if (isInCarousel)
-                    request.IsInCarousel = true;
-                else
-                    request.IsInCarousel = false;
 
                 await context.SaveChangesAsync();
             }
