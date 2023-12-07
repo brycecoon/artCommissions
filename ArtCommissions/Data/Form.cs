@@ -10,7 +10,7 @@ namespace ArtCommissions.Data;
 public class Form
 {
     private readonly ILogger<Form>? logger;
-    PostgresContext? context = null;
+    PostgresContext context;
 
     public byte[]? imageBytes { get; set; } = null;
     public List<CommissionExample>? commissionExamples { get; private set; }
@@ -137,11 +137,12 @@ public class Form
         }
     }
 
-    public virtual async Task SaveFileToDatabase(CommissionRequest request)
+    public async Task SaveFileToDatabase(CommissionRequest request)
     {
         try
         {
             await context.CommissionRequests.AddAsync(request);
+            await context.SaveChangesAsync();
 
             if (imageBytes != null)
             {
