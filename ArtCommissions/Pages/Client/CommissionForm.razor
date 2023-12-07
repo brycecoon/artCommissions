@@ -47,7 +47,7 @@
                 @foreach (var cr in form.commissionExamples)
                 {
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="exampleRadio" id="exampleRadio1" @onchange="() => {form.SelectedType = cr.CommissionType; price=cr.Price;}">
+                        <input class="form-check-input" type="radio" name="exampleRadio" id="exampleRadio1" @onchange="() => {form.SelectedType = cr.CommissionType; price=cr.Price; }">
                         <label class="form-check-label" for="exampleRadio1" id=@cr.CommissionType>
                             @cr.CommissionType
                         </label>
@@ -111,6 +111,8 @@
     const int MAX_TEXT_COUNT = 500;
     Form form;
     decimal? price;
+    public bool IsDataLoaded { get; private set; } = false;
+
     private void Navigate()
     {
         if (form.NameIsSelected == true && form.TypeIsSelected == true && form.ValidEmail == true)
@@ -124,17 +126,18 @@
         {
             var context = contextFactory.CreateDbContext();
             form = new Form(context, logger); // Inject the context into the Form constructor
+
+            IsDataLoaded = true;
         }
         catch (Exception ex)
         {
-            // Log any exceptions that occur during the initialization
             logger.LogError($"An error occurred during initialization: {ex.Message}");
         }
     }
 
     private async Task HandleFileChange(InputFileChangeEventArgs e)
     {
-        using (var stream = e.File.OpenReadStream(8000000))
+        using (var stream = e.File.OpenReadStream(1000000)) // 1MB
         {
             using (var memoryStream = new MemoryStream())
             {

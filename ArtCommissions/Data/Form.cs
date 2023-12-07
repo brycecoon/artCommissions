@@ -50,7 +50,7 @@ public class Form
             return;
         }
         else NameIsSelected = true;
-        
+
 
         if (!EmailVerification())
         {
@@ -58,7 +58,7 @@ public class Form
             return;
         }
         else ValidEmail = true;
-        
+
 
         if (SelectedType is null)
         {
@@ -79,26 +79,33 @@ public class Form
         request.ArtistId = 1;                 /////////////////////////////////HARD CODED VALUE///////////////////////////
         request.CommissionType = SelectedType;
         
-      /*  string apiUrl = "https://artapiclass25.azurewebsites.net/CommissionRequest";
-        //string apiUrl = "https://localhost:7087/CommissionRequest";
-        string email = request.Email;
-        string subject = "Thank you for your request!";
-        string message = $"Thank you for your request {request.Firstname}! I will get right to work on that!";
-        await CallApiAsync(apiUrl, email, subject, message);
+        var cost = await context.CommissionExamples
+            .Where(e => e.ArtistId == request.ArtistId)
+            .FirstOrDefaultAsync();
+        request.CommissionCost = cost.Price;
+        request.AmmountAlreadyPaid = 0;
 
-        email = "artcommissionmailer@gmail.com";
-        subject = "New Request";
-        message = $"You have a new request from {request.Firstname} {request.Lastname}. Here are the details:\n {request.Email}\n {request.Details}";
-        await CallApiAsync(apiUrl, email, subject, message);
-        try
-        {
-        }
-        catch (Exception ex)
-        {
-            LogError(ex, "An error occurred while processing a new request.");
-        }*/
-            await SaveFileToDatabase(request);
-            ResetFields();
+        /*  string apiUrl = "https://artapiclass25.azurewebsites.net/CommissionRequest";
+          //string apiUrl = "https://localhost:7087/CommissionRequest";
+          string email = request.Email;
+          string subject = "Thank you for your request!";
+          string message = $"Thank you for your request {request.Firstname}! I will get right to work on that!";
+          await CallApiAsync(apiUrl, email, subject, message);
+
+          email = "artcommissionmailer@gmail.com";
+          subject = "New Request";
+          message = $"You have a new request from {request.Firstname} {request.Lastname}. Here are the details:\n {request.Email}\n {request.Details}";
+          await CallApiAsync(apiUrl, email, subject, message);
+          try
+          {
+          }
+          catch (Exception ex)
+          {
+              LogError(ex, "An error occurred while processing a new request.");
+          }*/
+
+        await SaveFileToDatabase(request);
+        ResetFields();
     }
 
     private void ResetFields()
@@ -111,7 +118,6 @@ public class Form
 
     private async Task PopulateExampleTypes()
     {
-
         commissionExamples = await context.CommissionExamples.Where(c => c.ArtistId == 1).ToListAsync();
     }
 
@@ -124,7 +130,7 @@ public class Form
         }
         else
         {
-            for(int i = Email.IndexOf('@'); i < Email.Length; i++)
+            for (int i = Email.IndexOf('@'); i < Email.Length; i++)
             {
                 ValidEmail = false;
                 if (Email[i] == '.')
@@ -137,7 +143,7 @@ public class Form
         }
     }
 
-    public async Task SaveFileToDatabase(CommissionRequest request)
+    public virtual async Task SaveFileToDatabase(CommissionRequest request)
     {
         try
         {
@@ -157,11 +163,10 @@ public class Form
             await context.SaveChangesAsync();
 
             imageBytes = null;
-       }
+        }
         catch (Exception ex)
         {
             LogError(ex, "An error occurred while saving the file to the database.");
-            ////// Todo: fimx me help please :(((((( i so sad and don't wanna work. me too bud, me too
         }
     }
 
@@ -173,14 +178,8 @@ public class Form
             using (HttpClient client = new HttpClient())
             {
 
-                var postData = new Dictionary<string, string>
-            {
-                { "email", email }
-            };
-
-
+                var postData = new Dictionary<string, string> { { "email", email } };
                 var content = new FormUrlEncodedContent(postData);
-
 
                 HttpResponseMessage response = await client.PostAsync(apiUrl, content);
 
@@ -199,7 +198,7 @@ public class Form
         {
             LogError(ex, "An error occurred during the API call.");
         }
-        
+
     }
 
     public virtual void LogError(Exception? ex, string message)
