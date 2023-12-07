@@ -1,5 +1,6 @@
 ﻿using ArtCommissions.Data;
 using Bunit;
+using Bunit.TestDoubles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
@@ -12,9 +13,18 @@ public class BlazorIntegrationTestContext : TestContext, IAsyncLifetime
 
     public BlazorIntegrationTestContext()
     {
+        var authContext = this.AddTestAuthorization();
+        authContext.SetRoles(Constants.AdminRole);
+
+        var whereAmI = Environment.CurrentDirectory;
+        var backupFile = Directory.GetFiles("../../../..", "*.sql", SearchOption.AllDirectories)
+            .Select(f => new FileInfo(f))
+            .OrderByDescending(fi => fi.LastWriteTime)
+            .First();
         _dbContainer = new PostgreSqlBuilder()
             .WithImage("postgres")
             .WithPassword("Strong_password_123!")
+            .WithBindMount(backupFile.FullName, "/docker-entrypoint-initdb.d/init.sql")
             .Build();
 
         Services.AddDbContextFactory<PostgresContext>(options => options.UseNpgsql(_dbContainer.GetConnectionString()));
@@ -33,5 +43,3 @@ public class BlazorIntegrationTestContext : TestContext, IAsyncLifetime
         await _dbContainer.StopAsync();
     }
 }
-
-
