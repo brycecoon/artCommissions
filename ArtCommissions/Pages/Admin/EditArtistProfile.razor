@@ -53,7 +53,7 @@
             <hr />
             <p> About me: @aboutme</p>
             <hr />
-            <p> Total forms filled out : @result</p>
+            @* <p> Total forms filled out : @result</p> *@
             <div class="d-flex flex-row justify-content-center">
                 <button class="btn btn-primary btn-floating" @onclick="()=>{Editing();}">Edit</button>
             </div>
@@ -127,17 +127,17 @@
         lname = artist.Lastname;
         aboutme = artist.Aboutme;
         //socials = artist.Socials.;
-        var response = await httpclient.GetAsync("https://localhost:7087/CommissionRequest/1"); //TODO: switch this to a specific API for it to work on azure
-        var content = await response.Content.ReadAsStringAsync();
-        try
-        {
-            var resultCount = int.Parse(content);
-            result = resultCount;
-        }
-        catch
-        {
-            result = 0;
-        }
+        //var response = await httpclient.GetAsync("https://localhost:7087/CommissionRequest/1"); //TODO: switch this to a specific API for it to work on azure
+        //var content = await response.Content.ReadAsStringAsync();
+        //try
+        //{
+        //    var resultCount = int.Parse(content);
+        //    result = resultCount;
+        //}
+        //catch
+        //{
+        //    result = 0;
+        //}
     }
 
     async Task refreshAsync()

@@ -79,7 +79,7 @@ public class Form
         request.ArtistId = 1;                 /////////////////////////////////HARD CODED VALUE///////////////////////////
         request.CommissionType = SelectedType;
         
-        string apiUrl = "https://artapiclass25.azurewebsites.net/CommissionRequest";
+      /*  string apiUrl = "https://artapiclass25.azurewebsites.net/CommissionRequest";
         //string apiUrl = "https://localhost:7087/CommissionRequest";
         string email = request.Email;
         string subject = "Thank you for your request!";
@@ -92,13 +92,13 @@ public class Form
         await CallApiAsync(apiUrl, email, subject, message);
         try
         {
-            await SaveFileToDatabase(request);
-            ResetFields();
         }
         catch (Exception ex)
         {
             LogError(ex, "An error occurred while processing a new request.");
-        }
+        }*/
+            await SaveFileToDatabase(request);
+            ResetFields();
     }
 
     private void ResetFields()
@@ -156,7 +156,7 @@ public class Form
             await context.SaveChangesAsync();
 
             imageBytes = null;
-        }
+       }
         catch (Exception ex)
         {
             LogError(ex, "An error occurred while saving the file to the database.");
