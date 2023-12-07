@@ -34,7 +34,7 @@ namespace ArtAPI.Controllers
         public async Task<IActionResult> Index(string email)
         {
             await emailSender.SendEmailAsync(email);
-            return Ok();
+            return Ok(email);
         }
     }
 }

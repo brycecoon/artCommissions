@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.CodeAnalysis.Emit;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Net;
 using System.Net.Http;
+using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 
@@ -79,7 +83,7 @@ public class Form
         request.ArtistId = 1;                 /////////////////////////////////HARD CODED VALUE///////////////////////////
         request.CommissionType = SelectedType;
         
-        string apiUrl = "https://artapiclass25.azurewebsites.net/CommissionRequest";
+        string apiUrl = "https://artapiclass25.azurewebsites.net/";
         //string apiUrl = "https://localhost:7087/CommissionRequest";
         string email = request.Email;
         string subject = "Thank you for your request!";
@@ -177,12 +181,15 @@ public class Form
                 { "email", email }
             };
 
+                client.BaseAddress = new Uri("https://artapiclass25.azurewebsites.net/commissionrequest/");
+                var content1 = WebUtility.UrlEncode(email);
+                HttpContent content = new StringContent(content1, Encoding.UTF8, "text/plain");
+                Console.WriteLine(content);
 
-                var content = new FormUrlEncodedContent(postData);
 
-
-                HttpResponseMessage response = await client.PostAsync(apiUrl, content);
-
+                HttpResponseMessage response = await client.PostAsync("", content);
+                LogInformation($"call made to {content}   {content1} ,, this is responce {response}");
+                //response = await client.PostAsync("/CommissionRequest/artcommission25%40gmail.com", content);
                 // Check if the request was successful
                 if (response.IsSuccessStatusCode)
                 {

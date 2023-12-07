@@ -20,6 +20,12 @@ builder.Services.AddDbContextFactory<PostgresContext>(config => config.UseNpgsql
 builder.Services.AddScoped<ICommissionService, CommissionRequestService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddHttpClient();
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressConsumesConstraintForFormFileParameters = true;
+    options.SuppressInferBindingSourcesForParameters = true;
+    options.SuppressModelStateInvalidFilter = true;
+});
 
 
 
