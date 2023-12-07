@@ -16,11 +16,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
-builder.Services.AddDbContextFactory<PostgresContext>(options =>
-{
-	options.UseNpgsql(builder.Configuration.GetConnectionString("db"));
-});
-
+builder.Services.AddDbContextFactory<PostgresContext>(config => config.UseNpgsql(builder.Configuration["db"]));
 builder.Services.AddScoped<ICommissionService, CommissionRequestService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddHttpClient();
