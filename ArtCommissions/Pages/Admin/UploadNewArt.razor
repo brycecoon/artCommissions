@@ -18,9 +18,27 @@
         }
     </div>
 
+
     <div>
-        <div class="my-3 d-flex justify-content-center">
-            <InputFile OnChange="@HandleFileChange" />
+        <div class="text-center">
+            <InputFile OnChange="@HandleFileChange" class="m-2"/>
+            <br/>
+
+            <div class="text-center m-3">
+                Choose a commission type for this art
+
+                <select class="form-select mb-2 " @onchange="e => HandleCommissionChange(e.Value.ToString())">
+                    @if (commissions is not null)
+                    {
+                        @foreach (var row2 in commissions)
+                        {
+                            <option value="@row2.CommissionType">@row2.CommissionType</option>
+                        }
+                    }
+                    <option>No Type</option>
+                </select>
+            </div><br />
+
             <button class="btn btn-primary d-inline mx-2" @onclick="SaveFileToDatabase">Upload</button>
         </div>
 
@@ -31,16 +49,15 @@
         }
     </div>
 
-    <div>
-        @* ////////////////////////////////////////////// BLARING TODO //////////////////////////////////////////////////////////// *@
-    </div>
 </div>
 
 @code {
     //get upload logic from the test component, make it look nice
     private byte[]? uploadImagesBytes = null;
     private string? confirmationMessage = null;
-    private List<CommissionExample> types { get; set; }
+    private List<CommissionExample>? types { get; set; }
+    private List<CommissionExample>? commissions;
+    private string selectedCommission;
 
     protected override async Task OnInitializedAsync()
     {
@@ -49,6 +66,11 @@
         var types = await context.CommissionExamples
         .Where(c => c.ArtistId == 1)
         .ToListAsync();
+
+        commissions = await context.CommissionExamples
+    .Where(c => c.ArtistId == 1)
+    .OrderBy(c => c.Id)
+    .ToListAsync();
     }
 
     private async Task HandleFileChange(InputFileChangeEventArgs e)
@@ -63,6 +85,11 @@
         }
     }
 
+    private void HandleCommissionChange(string value)
+    {
+        selectedCommission = value;
+    }
+
     private async Task SaveFileToDatabase()
     {
         if (uploadImagesBytes is null) { confirmationMessage = "no file selected"; return; }
@@ -71,14 +98,14 @@
         {
             var context = contextFactory.CreateDbContext();
 
-            CommissionExample comm = new()
-                {
-                    ArtistId = 1,
-                };
+            var tryAdd = context.CommissionExamples
+            .Where(c => c.ArtistId == 1)
+            .Where(c => c.CommissionType == selectedCommission)
+            .FirstOrDefault();
 
             ExampleImage art = new ExampleImage()
                 {
-
+                    CommissionExampleId = tryAdd.Id,
                     Image = uploadImagesBytes
                 };
 

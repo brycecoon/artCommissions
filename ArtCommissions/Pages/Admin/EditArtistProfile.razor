@@ -127,7 +127,7 @@
         lname = artist.Lastname;
         aboutme = artist.Aboutme;
         //socials = artist.Socials.;
-        var response = await httpclient.GetAsync("https://localhost:7087/CommissionRequest/1");
+        var response = await httpclient.GetAsync("https://localhost:7087/CommissionRequest/1"); //TODO: switch this to a specific API for it to work on azure
         var content = await response.Content.ReadAsStringAsync();
         try
         {
