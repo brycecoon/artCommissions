@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using ArtCommissions.Data;
 using System.Security.AccessControl;
 using ArtAPI.Services;
+using NuGet.Protocol;
+using System.Text.Json;
 
 namespace ArtAPI.Controllers
 {
@@ -20,14 +22,12 @@ namespace ArtAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<int> GetCount(int id)
+        public async Task<string> GetCount(int id)
         {
             _logger.LogInformation($"getting the number of commissions for artist {id}");
-            int commissions = await _service.GetCount(id);
-
-
-
-            return commissions;
+            var commissions = await _service.GetCount(id);
+            string jsonString = JsonSerializer.Serialize(commissions);
+            return jsonString;
         }
 
         [HttpPost("{email}")]

@@ -79,7 +79,7 @@ public class Form
         request.ArtistId = 1;                 /////////////////////////////////HARD CODED VALUE///////////////////////////
         request.CommissionType = SelectedType;
         
-        string apiUrl = "https://artapiclass25.azurewebsites.net"; ///Change THisssSSsssssSSSSSsssssssSSSSS
+        string apiUrl = "https://artapiclass25.azurewebsites.net/CommissionRequest";
         //string apiUrl = "https://localhost:7087/CommissionRequest";
         string email = request.Email;
         string subject = "Thank you for your request!";
