@@ -1,4 +1,5 @@
 ﻿using ArtCommissions.Data;
+using ArtCommissions.Pages.Admin;
 using ArtCommissions.Pages.Client;
 using Bunit;
 using Bunit.TestDoubles;
@@ -56,14 +57,52 @@ public class IntegrationTests : BlazorIntegrationTestContext
     }
 
     [Fact]
-    public async Task t()
+    public async Task CanChangeCommissionTypeForExampleImage()
     {
+        // Arrange
+        var cut = RenderComponent<EditArtAndTags>();
+        cut.WaitForState(() => cut.Instance.IsDataLoaded, TimeSpan.FromSeconds(5));
 
+        var select = cut.Find("select[class='form-select mb-2']");
+        var saveButton = cut.Find("#saveButton");
+
+        // Act
+        select.Change("~3 hours");
+        await cut.InvokeAsync(() => saveButton.Click());
+
+        // Assert
+        var dbContext = Services.GetRequiredService<PostgresContext>();
+        var submittedData = await dbContext.ExampleImages
+            .Where(c => c.CommissionExample.ArtistId == 1)
+            .FirstOrDefaultAsync();
+
+        var selectedClass = await dbContext.CommissionExamples
+            .Where(c => c.CommissionType == "~3 hours")
+            .FirstOrDefaultAsync();
+
+        submittedData.CommissionExampleId.Should().Be(selectedClass.Id);
     }
 
     [Fact]
-    public async Task t2()
+    public async Task CanChangeIsInCarouselForExampleImage()
     {
+        // Arrange
+        var cut = RenderComponent<EditArtAndTags>();
+        cut.WaitForState(() => cut.Instance.IsDataLoaded, TimeSpan.FromSeconds(5));
 
+        var select = cut.Find("input[class='form-check-input carouselSelector']");
+        var saveButton = cut.Find("#saveButton");
+
+        // Act
+        select.Change("No");
+        await cut.InvokeAsync(() => saveButton.Click());
+
+        // Assert
+        var dbContext = Services.GetRequiredService<PostgresContext>();
+        var submittedData = await dbContext.ExampleImages
+            .Where(c => c.CommissionExample.ArtistId == 1)
+            .FirstOrDefaultAsync();
+
+        submittedData.IsInCarousel.Should().Be(false);
     }
 }
