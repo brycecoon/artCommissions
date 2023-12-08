@@ -47,7 +47,7 @@
                 @foreach (var cr in form.commissionExamples)
                 {
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="exampleRadio" id="exampleRadio1" @onchange="() => {form.SelectedType = cr.CommissionType; price=cr.Price; }">
+                        <input class="form-check-input" type="radio" name="exampleRadio" id="exampleRadio1" @onclick="() => {form.SelectedType = cr.CommissionType; price=cr.Price; }">
                         <label class="form-check-label" for="exampleRadio1" id=@cr.CommissionType>
                             @cr.CommissionType
                         </label>
