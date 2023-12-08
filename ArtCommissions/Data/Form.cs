@@ -78,11 +78,8 @@ public class Form
         request.Details = CommissionDetails;
         request.ArtistId = 1;                 /////////////////////////////////HARD CODED VALUE///////////////////////////
         request.CommissionType = SelectedType;
-        
-        var cost = await context.CommissionExamples
-            .Where(e => e.ArtistId == request.ArtistId)
-            .FirstOrDefaultAsync();
-        request.CommissionCost = cost.Price;
+
+        request.CommissionCost = await GetCommissionPrice(request);
         request.AmmountAlreadyPaid = 0;
 
         /*  string apiUrl = "https://artapiclass25.azurewebsites.net/CommissionRequest";
@@ -168,6 +165,15 @@ public class Form
         {
             LogError(ex, "An error occurred while saving the file to the database.");
         }
+    }
+
+    public virtual async Task<decimal> GetCommissionPrice(CommissionRequest request)
+    {
+        var cost = await context.CommissionExamples
+            .Where(e => e.ArtistId == request.ArtistId)
+            .Where(e => e.CommissionType == request.CommissionType)
+            .FirstOrDefaultAsync();
+        return (decimal)cost.Price;
     }
 
 

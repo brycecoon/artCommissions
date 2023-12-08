@@ -14,15 +14,15 @@ public class AdminTests
         var mockForm = new Mock<Form>(); // Assuming Form is not sealed and allows mocking
 
         mockForm.Setup(f => f.SaveFileToDatabase(It.IsAny<CommissionRequest>())).Returns(Task.CompletedTask).Verifiable();
-        //mockForm.Setup(f => f.LogError(It.IsAny<Exception?>(), It.IsAny<string>())).Verifiable();
-        //mockForm.Setup(f => f.LogError(null, It.IsAny<string>())).Verifiable();
-        //mockForm.Setup(f => f.LogInformation(It.IsAny<string>())).Verifiable();
+        mockForm.Setup(f => f.GetCommissionPrice(It.IsAny<CommissionRequest>()))
+            .ReturnsAsync(6.0m)
+            .Verifiable();
 
         Form f = mockForm.Object;
         f.Name = "mweep joe";
         f.Email = "example@test.com";
         f.CommissionDetails = "the deets";
-        f.SelectedType = "Icon";
+        f.SelectedType = "~5 hours";
 
         // Act
         await f.CreateNewRequest();
@@ -38,15 +38,15 @@ public class AdminTests
         var mockForm = new Mock<Form>(); // Assuming Form is not sealed and allows mocking
 
         mockForm.Setup(f => f.SaveFileToDatabase(It.IsAny<CommissionRequest>())).Returns(Task.CompletedTask).Verifiable();
-        //mockForm.Setup(f => f.LogError(It.IsAny<Exception?>(), It.IsAny<string>())).Verifiable();
-        //mockForm.Setup(f => f.LogError(null, It.IsAny<string>())).Verifiable();
-        //mockForm.Setup(f => f.LogInformation(It.IsAny<string>())).Verifiable();
+        mockForm.Setup(f => f.GetCommissionPrice(It.IsAny<CommissionRequest>()))
+            .ReturnsAsync(6.0m)
+            .Verifiable();
 
         Form f = mockForm.Object;
         f.Name = "mweep joe";
         f.Email = "example@test.com";
         f.CommissionDetails = "the deets";
-        f.SelectedType = "Icon";
+        f.SelectedType = "~5 hours";
 
         // Act
         await f.CreateNewRequest();
@@ -74,7 +74,7 @@ public class AdminTests
         f.Name = null;
         f.Email = "example@test.com";
         f.CommissionDetails = "the deets";
-        f.SelectedType = "Icon";
+        f.SelectedType = "~5 hours";
 
         // Act
         await f.CreateNewRequest();
@@ -98,7 +98,7 @@ public class AdminTests
         f.Name = "mweep joe";
         f.Email = "";
         f.CommissionDetails = "the deets";
-        f.SelectedType = "Icon";
+        f.SelectedType = "~5 hours";
 
         // Act
         await f.CreateNewRequest();
@@ -123,7 +123,7 @@ public class AdminTests
         f.Name = "mweep joe";
         f.Email = "dummy :)";
         f.CommissionDetails = "the deets";
-        f.SelectedType = "Icon";
+        f.SelectedType = "~5 hours";
 
         // Act
         await f.CreateNewRequest();
