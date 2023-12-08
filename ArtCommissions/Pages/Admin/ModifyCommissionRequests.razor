@@ -7,53 +7,56 @@
 @inject NavigationManager nav
 @inject ILogger<PostgresContext> logger
 
-<div class="my-5">
-    <table class="table table-striped">
-        <thead>
+<div class="my-5" style="margin: auto; max-width: 80%; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+    <table class="table table-striped" style="width: 100%; border-collapse: collapse; border-spacing: 0; font-size: 14px;">
+        <thead style="background-color: #f8f9fa; text-align: center;">
             <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Commission Type</th>
-                <th scope="col">Description</th>
-                <th scope="col">References</th>
-                <th scope="col">Email</th>
-                <th scope="col">Cost</th>
-                <th scope="col">Amount Paid</th>
-                <th scope="col">Accepted Status</th>
-                <th scope="col" />
-                <th scope="col" />
+                <th scope="col" style="border: 1px solid #dee2e6; padding: 10px;">Name</th>
+                <th scope="col" style="border: 1px solid #dee2e6; padding: 10px;">Commission Type</th>
+                <th scope="col" style="border: 1px solid #dee2e6; padding: 10px;">Description</th>
+                <th scope="col" style="border: 1px solid #dee2e6; padding: 10px;">References</th>
+                <th scope="col" style="border: 1px solid #dee2e6; padding: 10px;">Email</th>
+                <th scope="col" style="border: 1px solid #dee2e6; padding: 10px;">Cost</th>
+                <th scope="col" style="border: 1px solid #dee2e6; padding: 10px;">Amount Paid</th>
+                <th scope="col" style="border: 1px solid #dee2e6; padding: 10px;">Accepted Status</th>
+                <th scope="col" style="border: 1px solid #dee2e6; padding: 10px;"></th>
+                <th scope="col" style="border: 1px solid #dee2e6; padding: 10px;"></th>
             </tr>
         </thead>
         <tbody>
             @if (commissions is not null && commissions.Count > 0)
                 @foreach (var cr in commissions)
                 {
-                    <tr>
-                        <td>@cr.Firstname @cr.Lastname</td>
-                        <td>@cr.CommissionType</td>
-                        <td>@cr.Details</td>
+                    <tr style="border: 1px solid #dee2e6;">
+                        <td style="border: 1px solid #dee2e6; padding: 10px; font-weight: bold;">@cr.Firstname @cr.Lastname</td>
+                        <td style="border: 1px solid #dee2e6; padding: 10px;">@cr.CommissionType</td>
+                        <td style="border: 1px solid #dee2e6; padding: 10px;">@cr.Details</td>
 
-                        <td>
+                        <td style="border: 1px solid #dee2e6; padding: 10px;">
                             @foreach (var row in referenceImages)
                             {
                                 @if (cr.Id == row.CommissionRequestId && cr.AcceptedStatus is not null)
                                 {
-                                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(row.Image)" class="d-block w-100" style="max-width: 50px">
+                                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(row.Image)" class="d-block" style="max-width: 50px; margin-bottom: 5px;">
                                 }
                             }
                         </td>
 
-                        <td>@cr.Email</td>
-                        <td>$@cr.CommissionCost</td>
-                        <td>$@cr.AmmountAlreadyPaid</td>
-                        <td>@cr.AcceptedStatus</td>
+                        <td style="border: 1px solid #dee2e6; padding: 10px;">@cr.Email</td>
+                        <td style="border: 1px solid #dee2e6; padding: 10px; color: #007bff;">$@cr.CommissionCost</td>
+                        <td style="border: 1px solid #dee2e6; padding: 10px; color: #28a745;">$@cr.AmmountAlreadyPaid</td>
+                        <td style="border: 1px solid #dee2e6; padding: 10px; color:
+                        @(cr.AcceptedStatus == "PENDING" ? "#007bff" : (cr.AcceptedStatus == "DENIED" ? "#ff0001" : "#28a745"));">
+                            @cr.AcceptedStatus
+                        </td>
                         @if (cr.AcceptedStatus == "PENDING")
                         {
-                            <td>
+                            <td style="border: 1px solid #dee2e6; padding: 10px;">
                                 <button @onclick="async () => { await Accept(cr.Id); }" class="btn btn-primary" aria-disabled="false">
                                     Accept
                                 </button>
                             </td>
-                            <td>
+                            <td style="border: 1px solid #dee2e6; padding: 10px;">
                                 <button @onclick="() => { Deny(cr); commissions.Remove(cr); }" class="btn btn-danger" aria-disabled="false">
                                     Deny
                                 </button> @*delete sets to null*@
@@ -61,14 +64,15 @@
                         }
                         else
                         {
-                            <td></td>
-                            <td></td>
+                            <td style="border: 1px solid #dee2e6; padding: 10px;"></td>
+                            <td style="border: 1px solid #dee2e6; padding: 10px;"></td>
                         }
                     </tr>
                 }
         </tbody>
     </table>
 </div>
+
 
 @code {
     private List<CommissionRequest>? commissions { get; set; }
